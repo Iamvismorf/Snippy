@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 640 640"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="trash-can-regular-full(1).svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect1"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 | F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
+       radius="0"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+  </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="1.0838621"
+     inkscape:cx="465.46511"
+     inkscape:cy="280.47848"
+     inkscape:window-width="2473"
+     inkscape:window-height="1440"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <!--!Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+  <path
+     d="m 464,208 v 304 c 0,8.8 -7.2,16 -16,16 H 192 c -8.8,0 295.03273,10.41376 295.19336,1.61523 L 493.06445,208 Z"
+     style=""
+     id="path18" />
+  <path
+     d="m 128,208 v 304 c 0,35.3 28.7,64 64,64 h 256 c 35.3,0 64,-28.7 64,-64 V 208 h -18.93555 l -5.87109,321.61523 C 487.03273,538.41376 183.2,528 192,528 h 256 c 8.8,0 16,-7.2 16,-16 V 208 Z m 136,72 c 13.3,0 24,10.7 24,24 v 176 c 0,13.3 -10.7,24 -24,24 -13.3,0 -24,-10.7 -24,-24 V 304 c 0,-13.3 10.7,-24 24,-24 z m 112,0 c 13.3,0 24,10.7 24,24 v 176 c 0,13.3 -10.7,24 -24,24 -13.3,0 -24,-10.7 -24,-24 V 304 c 0,-13.3 10.7,-24 24,-24 z"
+     style=""
+     id="path17" />
+  <path
+     d="m 262.19922,48 c -13.3,0 -25.3,8.300781 -30,20.800781 L 216,112 h -96 c -13.3,0 -24,10.7 -24,24 0,13.3 10.7,24 24,24 h 400 c 13.3,0 24,-10.7 24,-24 0,-13.3 -10.7,-24 -24,-24 H 424 L 407.80078,68.800781 c -4.7,-12.5 -16.6,-20.800781 -30,-20.800781 z"
+     style=""
+     id="path19" />
+</svg>

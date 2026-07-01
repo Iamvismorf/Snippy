@@ -1,0 +1,6 @@
+.direnv/
+.git/
+
+.qmlls.ini
+*.png
+todo.txt
