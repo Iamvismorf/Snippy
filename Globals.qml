@@ -5,30 +5,30 @@ import QtQuick
 import qs.toolbar
 
 Singleton {
-    property color selectedColor
-    property int/* Toolbar.ToolTypes */ selectedTool: Enums.Tools.None
+    // property color selectedColor // toolbar.qml
+    // property int/* Toolbar.ToolTypes */ selectedTool: Enums.Tools.None //toolbar.qml
 
-    property int cstep: -1
-    property var history: []
-    property int thickness: 4 //todo: make available in toolbar
+    // property int cstep: -1 //canvas.qml
+    // property var history: [] //canvas.qml
+    property int thickness: 4 //todo: make available in toolbar.qml
 
-    function pushToHistory(ann) {
-        cstep++;
-        if (cstep < history.length) {
-            history.length = cstep;
-        }
+    // function pushToHistory(ann) { // canvas.qml
+    //     cstep++;
+    //     if (cstep < history.length) {
+    //         history.length = cstep;
+    //     }
+    //
+    //     history.push(ann);
+    //     historyChanged();
+    // }
 
-        history.push(ann);
-        historyChanged();
-    }
-
-    //no need for safe guard because we safe guard by disabling the button
-    function undo() {
-        cstep--;
-    }
-    function redo() {
-        cstep++;
-    }
+    // //no need for safe guard because we safe guard by disabling the button
+    // function undo() { //canvas.qml
+    //     cstep--;
+    // }
+    // function redo() { //canvas.qml
+    //     cstep++;
+    // }
 
     // onCstepChanged: console.log(cstep)
     // onSelectedToolChanged: console.log(Qt.enumValueToStrings(Enums.Tools, selectedTool))

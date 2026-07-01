@@ -2,14 +2,12 @@ import QtQuick
 import QtQuick.Shapes
 import "../"
 
-Rectangle {
+Item {
     id: root
     property var annotation
 
     implicitWidth: ldr.implicitWidth
     implicitHeight: ldr.implicitHeight
-    color: "red"
-    opacity: 0.2
 
     Loader {
         id: ldr

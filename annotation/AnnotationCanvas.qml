@@ -10,10 +10,12 @@ import "../"
 Item {
     id: root
     property var temp: {}
+    property var history: []
+    property int cstep: -1
 
     Repeater {
         model: ScriptModel {
-            values: Globals.cstep >= 0 ? Globals.history.slice(0, Globals.cstep + 1) : []
+            values: root.cstep >= 0 ? root.history.slice(0, root.cstep + 1) : []
         }
         delegate: AnnotationShape {
             required property var modelData
@@ -24,5 +26,23 @@ Item {
     AnnotationShape {
         annotation: root.temp
         visible: !Lib.isEmpty(root.temp)
+    }
+
+    function pushToHistory(ann) {
+        cstep++;
+        if (cstep < history.length) {
+            history.length = cstep;
+        }
+
+        history.push(ann);
+        historyChanged();
+    }
+
+    //no need for safe guard because we safe guard by disabling the button
+    function undo() { //canvas.qml
+        cstep--;
+    }
+    function redo() { //canvas.qml
+        cstep++;
     }
 }

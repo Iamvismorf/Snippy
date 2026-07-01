@@ -59,10 +59,10 @@ PanelWindow {
                        startY: mouse.y,
                        x: mouse.x,
                        y: mouse.y,
-                       type: Globals.selectedTool,
+                       type: toolbar.selectedTool,
                        points: [],
                        thickness: Globals.thickness,
-                       color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                       color: Qt.rgba(toolbar.selectedColor.r, toolbar.selectedColor.g, toolbar.selectedColor.b) // bruh
                     });
                 }
             }
@@ -70,7 +70,7 @@ PanelWindow {
             else {
                //todo: selection or eraser
                if (selectionRectangle.state == "created") { // we know this is triggered only when a tool is clicked
-                  Globals.pushToHistory(canvas.temp)
+                  canvas.pushToHistory(canvas.temp)
                   canvas.temp = {};
                }
 
@@ -211,7 +211,7 @@ PanelWindow {
     SelectionRectangle {
         id: selectionRectangle
 
-        readonly property bool locked: Globals.selectedTool != Enums.Tools.None
+        readonly property bool locked: toolbar.selectedTool != Enums.Tools.None
 
         DragHandler {
             id: selectionRectangleDragHandler
@@ -279,6 +279,7 @@ PanelWindow {
     Toolbar {
         id: toolbar
         selectionRectangle: selectionRectangle
+        canvas: canvas
 
         anchors.top: selectionRectangle.bottom
         anchors.horizontalCenter: selectionRectangle.horizontalCenter
@@ -287,10 +288,10 @@ PanelWindow {
         onAction: action => {
             switch (action) {
             case Enums.Actions.Undo:
-                Globals.undo();
+                canvas.undo();
                 break;
             case Enums.Actions.Redo:
-                Globals.redo();
+                canvas.redo();
                 break;
             case Enums.Actions.Abort:
                 Qt.quit();

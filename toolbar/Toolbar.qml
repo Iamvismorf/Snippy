@@ -4,12 +4,17 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import qs.components
+import qs.annotation
 import "../"
 
 Rectangle {
     id: root
 
     required property Rectangle selectionRectangle
+    required property AnnotationCanvas canvas
+
+    property alias selectedColor: palette.selectedColor
+    property int/* Toolbar.ToolTypes */ selectedTool: Enums.Tools.None //toolbar.qml
 
     signal action(action: int/*Enums.Actions*/)
 
@@ -20,7 +25,6 @@ Rectangle {
     color: Config.white
     clip: true
     opacity: !selectionRectangle.active && selectionRectangle.state == "created" //todo: should also be when drawing
-    // opacity: 1
     visible: opacity
 
     RowLayout {
@@ -102,7 +106,7 @@ Rectangle {
                             implicitHeight: _current.implicitHeight
 
                             color: {
-                                if (Globals.selectedTool == _current.type) {
+                                if (root.selectedTool == _current.type) {
                                     return Config.accent;
                                 }
                                 if (hoverHandler.hovered) {
@@ -120,7 +124,7 @@ Rectangle {
                                 property string eyedih: "filled"
 
                                 icon.fillColor: {
-                                    if (Globals.selectedTool == type) {
+                                    if (root.selectedTool == type) {
                                         return Config.white;
                                     }
                                     return Config.black;
@@ -145,7 +149,7 @@ Rectangle {
                                 property string eyedih: "notfilled"
 
                                 icon.fillColor: {
-                                    if (Globals.selectedTool == type) {
+                                    if (root.selectedTool == type) {
                                         return Config.white;
                                     }
                                     return Config.black;
@@ -165,10 +169,10 @@ Rectangle {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                                 onTapped: (e, b) => {
                                     if (b == Qt.LeftButton) {
-                                        if (Globals.selectedTool == filledComp._current.type) {
-                                            Globals.selectedTool = Enums.Tools.None;
+                                        if (root.selectedTool == filledComp._current.type) {
+                                            root.selectedTool = Enums.Tools.None;
                                         } else {
-                                            Globals.selectedTool = Qt.binding(function () {
+                                            root.selectedTool = Qt.binding(function () {
                                                 return filledComp._current.type;
                                             });
                                         }
@@ -185,7 +189,7 @@ Rectangle {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.type == Enums.Tools.Select || modelData.type == Enums.Tools.Erase)
-                                    return Globals.history.length > 0;
+                                    return root.canvas.history.length > 0;
                                 else
                                     return true;
                             }
@@ -193,7 +197,7 @@ Rectangle {
                             sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
 
                             color: {
-                                if (Globals.selectedTool == modelData.type) {
+                                if (root.selectedTool == modelData.type) {
                                     return Config.accent;
                                 }
                                 if (hoverHandler.hovered) {
@@ -206,7 +210,7 @@ Rectangle {
                                 if (!_available) {
                                     return Config.gray;
                                 }
-                                if (Globals.selectedTool == modelData.type) {
+                                if (root.selectedTool == modelData.type) {
                                     return Config.white;
                                 }
                                 return Config.black;
@@ -215,10 +219,10 @@ Rectangle {
                             hoverHandler.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
                             tapHandler.enabled: _available
                             tapHandler.onTapped: {
-                                if (Globals.selectedTool == modelData.type) {
-                                    Globals.selectedTool = Enums.Tools.None;
+                                if (root.selectedTool == modelData.type) {
+                                    root.selectedTool = Enums.Tools.None;
                                 } else {
-                                    Globals.selectedTool = modelData.type;
+                                    root.selectedTool = modelData.type;
                                 }
                             }
                         }
@@ -270,8 +274,8 @@ Rectangle {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.action == Enums.Actions.Undo)
-                                    return Globals.cstep > -1;
-                                return Globals.cstep != Globals.history.length - 1;
+                                    return root.canvas.cstep > -1;
+                                return root.canvas.cstep != root.canvas.history.length - 1;
                             }
 
                             sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
