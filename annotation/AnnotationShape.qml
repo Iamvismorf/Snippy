@@ -6,11 +6,16 @@ Item {
     id: root
     property var annotation
 
-    implicitWidth: ldr.implicitWidth
-    implicitHeight: ldr.implicitHeight
+    x: ldr.item?.boundingRect?.x ?? 0
+    y: ldr.item?.boundingRect?.y ?? 0
+    implicitWidth: ldr.item?.boundingRect?.width ?? 0
+    implicitHeight: ldr.item?.boundingRect?.height ?? 0
 
     Loader {
         id: ldr
+        x: -root.x
+        y: -root.y
+
         // qmlformat off
         sourceComponent: {
             switch (root.annotation?.type) {
@@ -65,6 +70,8 @@ Item {
     Component {
         id: rectangle
         Rectangle {
+            readonly property rect boundingRect: Qt.rect(x, y, width, height)
+
             x: Math.min(root.annotation.x, root.annotation.startX)
             y: Math.min(root.annotation.y, root.annotation.startY)
             width: Math.abs(root.annotation.x - root.annotation.startX)
@@ -79,6 +86,8 @@ Item {
     Component {
         id: filledRectangle
         Rectangle {
+            readonly property rect boundingRect: Qt.rect(x, y, width, height)
+
             x: Math.min(root.annotation.x, root.annotation.startX)
             y: Math.min(root.annotation.y, root.annotation.startY)
             width: Math.abs(root.annotation.x - root.annotation.startX)
@@ -201,6 +210,8 @@ Item {
     Component {
         id: highlight
         Rectangle {
+            readonly property rect boundingRect: Qt.rect(x, y, width, height)
+
             opacity: 0.4
             x: Math.min(root.annotation.x, root.annotation.startX)
             y: Math.min(root.annotation.y, root.annotation.startY)
