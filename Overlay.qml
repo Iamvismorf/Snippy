@@ -54,22 +54,24 @@ PanelWindow {
                 }
 
                 else {
-                    canvas.temp = ({
-                       startX: mouse.x,
-                       startY: mouse.y,
-                       x: mouse.x,
-                       y: mouse.y,
-                       type: toolbar.selectedTool,
-                       points: [],
-                       thickness: Globals.thickness,
-                       color: Qt.rgba(toolbar.selectedColor.r, toolbar.selectedColor.g, toolbar.selectedColor.b) // bruh
-                    });
+                      canvas.temp = ({
+                         id: canvas.tempId,
+                         startX: mouse.x,
+                         startY: mouse.y,
+                         x: mouse.x,
+                         y: mouse.y,
+                         type: toolbar.selectedTool,
+                         points: [],
+                         thickness: Globals.thickness,
+                         color: Qt.rgba(toolbar.selectedColor.r, toolbar.selectedColor.g, toolbar.selectedColor.b) // bruh
+                      });
+                      canvas.tempId++;
                 }
             }
 
             else {
                //todo: selection or eraser
-               if (selectionRectangle.state == "created") { // we know this is triggered only when a tool is clicked
+               if (selectionRectangle.state == "created") { // we know this is triggered only when a tool is selected
                   canvas.pushToHistory(canvas.temp)
                   canvas.temp = {};
                }
@@ -109,7 +111,7 @@ PanelWindow {
                 selectionRectangle.implicitHeight = heightTmp;
             }
 
-            else if (selectionRectangle.state == "created" && active) {
+            else if (selectionRectangle.state == "created" && canvas.temp.type != Enums.Tools.Erase) {
 
                if (canvas.temp.type == Enums.Tools.Draw) {
                   canvas.temp.points.push(mouse);
@@ -120,22 +122,6 @@ PanelWindow {
                }
 
                canvas.temp = Object.assign({}, canvas.temp)
-
-               // switch (canvas.temp.type) {
-               //    case Enums.Tools.FilledRectangle:
-               //
-               //
-               //    Object.assign(canvas.temp, {
-               //
-               //       x: Math.min(mouse.x, canvas.temp.startX),
-               //       y: Math.min(mouse.y, canvas.temp.startY),
-               //       w: Math.abs(mouse.x - canvas.temp.startX),
-               //       h: Math.abs(mouse.y - canvas.temp.startY)
-               //
-               //    })
-               //
-               //    break;
-               // }
             }
 
         }
@@ -295,6 +281,9 @@ PanelWindow {
                 break;
             case Enums.Actions.Abort:
                 Qt.quit();
+                break;
+            case Enums.Actions.Clear:
+                canvas.clearAll();
                 break;
             }
         }
