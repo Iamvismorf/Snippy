@@ -5,7 +5,7 @@ Rectangle {
     id: root
 
     readonly property int _resizeZoneWidth: 12
-    /* readonly property bool locked */ //instantiated outside yuck
+    /* readonly property bool locked */ // instantiated outside yuck
 
     property real startX
     property real startY
@@ -170,6 +170,7 @@ Rectangle {
     }
 
     HoverHandler {
+        enabled: !root.locked
         cursorShape: Qt.ArrowCursor
     }
 
