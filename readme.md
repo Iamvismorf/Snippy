@@ -1,5 +1,5 @@
 <div align="center">
-<h2>Sniptackle</h2>
+<h2>Snippy</h2>
 <p>Screenshot utility written with Quickshell</p>
 </div>
 
@@ -10,11 +10,12 @@
 ### Nix
 ### Manual
 #### Dependencies
++ Qt 6.10+
 + Quickshell 0.3.0+
 + [KDE/kirigami](https://develop.kde.org/frameworks/kirigami//)
 
 ```
-git clone https://github.com/iamvismorf/Sniptackle
+git clone https://github.com/iamvismorf/Snippy
 ```
 
 ## Usage

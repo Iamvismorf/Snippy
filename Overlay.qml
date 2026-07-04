@@ -50,7 +50,7 @@ PanelWindow {
 
                     selectionRectangle.state = "creating";
                 } else {
-                    if (toolbar.selectedTool == Enums.Tools.Erase) {
+                    if (Globals.selectedTool == Enums.Tools.Erase) {
                         let annotationId = canvas.childAt(mouse.x, mouse.y)?.annotation?.id;
                         if (annotationId != undefined) {
                             canvas.pushToHistory({
@@ -58,7 +58,7 @@ PanelWindow {
                                 ids: [annotationId]
                             });
                         }
-                    } else if (toolbar.selectedTool == Enums.Tools.Select) {
+                    } else if (Globals.selectedTool == Enums.Tools.Select) {
                         //todo: penis
                     } else {
                         canvas.temp = ({
@@ -67,10 +67,10 @@ PanelWindow {
                                 startY: mouse.y,
                                 x: mouse.x,
                                 y: mouse.y,
-                                type: toolbar.selectedTool,
+                                type: Globals.selectedTool,
                                 points: [],
                                 thickness: Globals.thickness,
-                                color: Qt.rgba(toolbar.selectedColor.r, toolbar.selectedColor.g, toolbar.selectedColor.b) // bruh
+                                color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
                             });
                         canvas.tempId++;
                     }
@@ -112,7 +112,7 @@ PanelWindow {
                 selectionRectangle.y = Math.min(mouse.y, selectionRectangle.startY);
                 selectionRectangle.implicitWidth = widthTmp;
                 selectionRectangle.implicitHeight = heightTmp;
-            } else if (selectionRectangle.state == "created" && toolbar.selectedTool != Enums.Tools.Erase) {
+            } else if (selectionRectangle.state == "created" && Globals.selectedTool != Enums.Tools.Erase) {
                 if (canvas.temp.type == Enums.Tools.Draw) {
                     canvas.temp.points.push(mouse);
                 } else {
@@ -136,11 +136,7 @@ PanelWindow {
         focus: true
 
         Keys.onEscapePressed: {
-            if (Config.clearSelectionOnEscape && selectionRectangle.state == "created") {
-                selectionRectangle.destruct();
-            } else {
-                Qt.quit();
-            }
+            Qt.quit();
         }
         Keys.onReturnPressed: {
             // let rx = Math.round(selectionRectangle.x);
@@ -194,7 +190,7 @@ PanelWindow {
     SelectionRectangle {
         id: selectionRectangle
 
-        readonly property bool locked: toolbar.selectedTool != Enums.Tools.None
+        readonly property bool locked: Globals.selectedTool != Enums.Tools.None
 
         DragHandler {
             id: selectionRectangleDragHandler
@@ -262,7 +258,6 @@ PanelWindow {
     Toolbar {
         id: toolbar
         selectionRectangle: selectionRectangle
-        canvas: canvas
 
         anchors.top: selectionRectangle.bottom
         anchors.horizontalCenter: selectionRectangle.horizontalCenter

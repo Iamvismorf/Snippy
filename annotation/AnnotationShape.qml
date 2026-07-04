@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import QtQuick.Shapes.DesignHelpers
 import "../"
 
 Item {
@@ -10,6 +11,42 @@ Item {
     y: ldr.item?.boundingRect?.y ?? 0
     implicitWidth: ldr.item?.boundingRect?.width ?? 0
     implicitHeight: ldr.item?.boundingRect?.height ?? 0
+
+    RectangleShape {
+        readonly property int _padding: 6
+
+        width: parent.width + _padding * 2
+        height: parent.height + _padding * 2
+
+        x: Math.round(parent.width / 2) - Math.round(width / 2)
+        y: Math.round(parent.height / 2) - Math.round(height / 2)
+
+        bevel: false
+        fillColor: "transparent"
+        dashPattern: [6, 8]
+        radius: 0
+        strokeColor: {
+            if (hoverHandler.hovered && Globals.selectedTool == Enums.Tools.Erase) {
+                return Config.accent;
+            } else if (hoverHandler.hovered && Globals.selectedTool == Enums.Tools.Select) {
+                return Config.gray;
+            } else {
+                return "transparent";
+            }
+        }
+        strokeStyle: ShapePath.DashLine
+        strokeWidth: 1
+
+        Behavior on strokeColor {
+            ColorAnimation {
+                duration: 250
+            }
+        }
+    }
+    HoverHandler {
+        id: hoverHandler
+        enabled: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select
+    }
 
     Loader {
         id: ldr

@@ -10,8 +10,6 @@ Singleton {
     readonly property color gray: "#C0C2C4"
     readonly property color lightGray: "#DEE1E3" // todo: prob need to go darker
 
-    readonly property bool clearSelectionOnEscape: true //todo: remove
-
     readonly property color dimColor: "black"
 
     readonly property int minSelectionWidth: 20

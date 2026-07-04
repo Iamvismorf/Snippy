@@ -9,20 +9,19 @@ Item {
     implicitWidth: root.implicitWidth
     implicitHeight: root.implicitHeight + arrow.implicitHeight
 
-    readonly property color selectedColor: root._selectedColor.value
-
     RowGroup {
         id: root
 
         property Rectangle _selectedColor
         anchors.verticalCenter: parent.verticalCenter
 
+        on_SelectedColorChanged: Globals.selectedColor = _selectedColor.color
+
         Repeater {
             model: [Config.toolbarPalette1, Config.toolbarPalette2, Config.toolbarPalette3, Config.toolbarPalette4, Config.toolbarPalette5, Config.toolbarPalette6, Config.toolbarPalette7, Config.toolbarPalette8]
 
             StyledRectangle {
                 required property color modelData
-                readonly property color value: modelData
 
                 width: Config.toolbarIconSize
                 height: width

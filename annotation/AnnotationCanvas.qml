@@ -11,25 +11,21 @@ Item {
     id: root
     property int tempId: 0
     property var temp: {}
-    property var history: []
-    property int cstep: -1
-    onHistoryChanged: console.log(JSON.stringify(history, null, " "))
-    // onCstepChanged: console.log("cstep: ", cstep)
 
     Repeater {
         model: ScriptModel {
             values: {
-                if (cstep < 0) {
+                if (Globals.cstep < 0) {
                     return [];
                 }
 
                 let erasedIds = new Set();
-                for (let i = 0; i <= cstep; i++) {
-                    if (root.history[i]?.type == Enums.Tools.Erase) {
-                        root.history[i].ids.forEach(id => erasedIds.add(id));
+                for (let i = 0; i <= Globals.cstep; i++) {
+                    if (Globals.history[i]?.type == Enums.Tools.Erase) {
+                        Globals.history[i].ids.forEach(id => erasedIds.add(id));
                     }
                 }
-                root.history.slice(0, root.cstep + 1).filter(ann => !erasedIds.has(ann.id));
+                Globals.history.slice(0, Globals.cstep + 1).filter(ann => !erasedIds.has(ann.id));
             }
         }
         delegate: AnnotationShape {
@@ -44,26 +40,26 @@ Item {
     }
 
     function pushToHistory(ann) {
-        cstep++;
-        if (cstep < history.length) {
-            history.length = cstep;
+        Globals.cstep++;
+        if (Globals.cstep < Globals.history.length) {
+            Globals.history.length = Globals.cstep;
         }
 
-        history.push(ann);
-        historyChanged();
+        Globals.history.push(ann);
+        Globals.historyChanged();
     }
 
     //no need for safe guard because we safe guard by disabling the button
     function undo() { //canvas.qml
-        cstep--;
+        Globals.cstep--;
     }
     function redo() { //canvas.qml
-        cstep++;
+        Globals.cstep++;
     }
     function clearAll() {
-        if (cstep < 0 || history[cstep]?.type == Enums.Tools.Erase && history[cstep]?.all)
+        if (Globals.cstep < 0 || Globals.history[Globals.cstep]?.type == Enums.Tools.Erase && Globals.history[Globals.cstep]?.all)
             return;
-        let ids = history.reduce((acc, ann) => {
+        let ids = Globals.history.reduce((acc, ann) => {
             if (ann.type != Enums.Tools.Erase) {
                 acc.push(ann.id);
             }

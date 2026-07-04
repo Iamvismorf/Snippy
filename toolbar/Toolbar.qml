@@ -11,10 +11,6 @@ Rectangle {
     id: root
 
     required property Rectangle selectionRectangle
-    required property AnnotationCanvas canvas
-
-    property alias selectedColor: palette.selectedColor
-    property int/* Toolbar.ToolTypes */ selectedTool: Enums.Tools.None //toolbar.qml
 
     signal action(action: int/*Enums.Actions*/)
 
@@ -106,7 +102,7 @@ Rectangle {
                             implicitHeight: _current.implicitHeight
 
                             color: {
-                                if (root.selectedTool == _current.type) {
+                                if (Globals.selectedTool == _current.type) {
                                     return Config.accent;
                                 }
                                 if (hoverHandler.hovered) {
@@ -124,7 +120,7 @@ Rectangle {
                                 property string eyedih: "filled"
 
                                 icon.fillColor: {
-                                    if (root.selectedTool == type) {
+                                    if (Globals.selectedTool == type) {
                                         return Config.white;
                                     }
                                     return Config.black;
@@ -149,7 +145,7 @@ Rectangle {
                                 property string eyedih: "notfilled"
 
                                 icon.fillColor: {
-                                    if (root.selectedTool == type) {
+                                    if (Globals.selectedTool == type) {
                                         return Config.white;
                                     }
                                     return Config.black;
@@ -169,10 +165,10 @@ Rectangle {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                                 onTapped: (e, b) => {
                                     if (b == Qt.LeftButton) {
-                                        if (root.selectedTool == filledComp._current.type) {
-                                            root.selectedTool = Enums.Tools.None;
+                                        if (Globals.selectedTool == filledComp._current.type) {
+                                            Globals.selectedTool = Enums.Tools.None;
                                         } else {
-                                            root.selectedTool = Qt.binding(function () {
+                                            Globals.selectedTool = Qt.binding(function () {
                                                 return filledComp._current.type;
                                             });
                                         }
@@ -189,7 +185,7 @@ Rectangle {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.type == Enums.Tools.Select || modelData.type == Enums.Tools.Erase)
-                                    return root.canvas.history.length > 0;
+                                    return Globals.history.length > 0;
                                 else
                                     return true;
                             }
@@ -197,7 +193,7 @@ Rectangle {
                             sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
 
                             color: {
-                                if (root.selectedTool == modelData.type) {
+                                if (Globals.selectedTool == modelData.type) {
                                     return Config.accent;
                                 }
                                 if (hoverHandler.hovered) {
@@ -210,7 +206,7 @@ Rectangle {
                                 if (!_available) {
                                     return Config.gray;
                                 }
-                                if (root.selectedTool == modelData.type) {
+                                if (Globals.selectedTool == modelData.type) {
                                     return Config.white;
                                 }
                                 return Config.black;
@@ -219,10 +215,10 @@ Rectangle {
                             hoverHandler.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
                             tapHandler.enabled: _available
                             tapHandler.onTapped: {
-                                if (root.selectedTool == modelData.type) {
-                                    root.selectedTool = Enums.Tools.None;
+                                if (Globals.selectedTool == modelData.type) {
+                                    Globals.selectedTool = Enums.Tools.None;
                                 } else {
-                                    root.selectedTool = modelData.type;
+                                    Globals.selectedTool = modelData.type;
                                 }
                             }
                         }
@@ -274,8 +270,8 @@ Rectangle {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.action == Enums.Actions.Undo)
-                                    return root.canvas.cstep > -1;
-                                return root.canvas.cstep != root.canvas.history.length - 1;
+                                    return Globals.cstep > -1;
+                                return Globals.cstep != Globals.history.length - 1;
                             }
 
                             sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))

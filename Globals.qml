@@ -5,11 +5,11 @@ import QtQuick
 import qs.toolbar
 
 Singleton {
-    // property color selectedColor // toolbar.qml
-    // property int/* Toolbar.ToolTypes */ selectedTool: Enums.Tools.None //toolbar.qml
+    property color selectedColor
+    property int/* Toolbar.ToolTypes */ selectedTool: Enums.Tools.None
 
-    // property int cstep: -1 //canvas.qml
-    // property var history: [] //canvas.qml
+    property int cstep: -1
+    property var history: []
     property int thickness: 4 //todo: make available in toolbar.qml
 
     // function pushToHistory(ann) { // canvas.qml
