@@ -87,7 +87,6 @@ Item {
         id: filledRectangle
         Rectangle {
             readonly property rect boundingRect: Qt.rect(x, y, width, height)
-            onBoundingRectChanged: root.annotation.boundingRect = boundingRect
 
             x: Math.min(root.annotation.x, root.annotation.startX)
             y: Math.min(root.annotation.y, root.annotation.startY)

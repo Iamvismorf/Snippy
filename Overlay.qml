@@ -14,7 +14,6 @@ PanelWindow {
 
     required property ShellScreen modelData
     screen: modelData
-    property int count: 0//todo: remove
 
     component Dim: Rectangle {
         color: Config.dimColor
@@ -36,7 +35,6 @@ PanelWindow {
         id: pointHandler
         acceptedButtons: Qt.LeftButton
 
-        // qmlformat off
         onActiveChanged: {
             if (active) {
                 const mouse = point.position;
@@ -51,30 +49,40 @@ PanelWindow {
                     selectionRectangle.startY = mouse.y;
 
                     selectionRectangle.state = "creating";
+                } else {
+                    if (toolbar.selectedTool == Enums.Tools.Erase) {
+                        let annotationId = canvas.childAt(mouse.x, mouse.y)?.annotation?.id;
+                        if (annotationId != undefined) {
+                            canvas.pushToHistory({
+                                type: Enums.Tools.Erase,
+                                ids: [annotationId]
+                            });
+                        }
+                    } else if (toolbar.selectedTool == Enums.Tools.Select) {
+                        //todo: penis
+                    } else {
+                        canvas.temp = ({
+                                id: canvas.tempId,
+                                startX: mouse.x,
+                                startY: mouse.y,
+                                x: mouse.x,
+                                y: mouse.y,
+                                type: toolbar.selectedTool,
+                                points: [],
+                                thickness: Globals.thickness,
+                                color: Qt.rgba(toolbar.selectedColor.r, toolbar.selectedColor.g, toolbar.selectedColor.b) // bruh
+                            });
+                        canvas.tempId++;
+                    }
                 }
-
-                else {
-                      canvas.temp = ({
-                         id: canvas.tempId,
-                         startX: mouse.x,
-                         startY: mouse.y,
-                         x: mouse.x,
-                         y: mouse.y,
-                         type: toolbar.selectedTool,
-                         points: [],
-                         thickness: Globals.thickness,
-                         color: Qt.rgba(toolbar.selectedColor.r, toolbar.selectedColor.g, toolbar.selectedColor.b) // bruh
-                      });
-                      canvas.tempId++;
+            } else {
+                //todo: selection or eraser
+                if (selectionRectangle.state == "created") { // we know this is triggered only when a tool is selected
+                    if (!Lib.isEmpty(canvas.temp)) {
+                        canvas.pushToHistory(canvas.temp);
+                        canvas.temp = {};
+                    }
                 }
-            }
-
-            else {
-               //todo: selection or eraser
-               if (selectionRectangle.state == "created") { // we know this is triggered only when a tool is selected
-                  canvas.pushToHistory(canvas.temp)
-                  canvas.temp = {};
-               }
 
                 if (selectionRectangle.active) {
                     selectionRectangle.active = false;
@@ -82,16 +90,11 @@ PanelWindow {
 
                 if (selectionRectangle.implicitWidth < Config.minSelectionWidth || selectionRectangle.implicitHeight < Config.minSelectionHeight) {
                     selectionRectangle.destruct();
-                }
-
-                else {
+                } else {
                     selectionRectangle.state = "created";
                 }
             }
         }
-        // qmlformat on
-
-                // qmlformat off
         onPointChanged: {
             const mouse = point.position;
 
@@ -109,23 +112,17 @@ PanelWindow {
                 selectionRectangle.y = Math.min(mouse.y, selectionRectangle.startY);
                 selectionRectangle.implicitWidth = widthTmp;
                 selectionRectangle.implicitHeight = heightTmp;
+            } else if (selectionRectangle.state == "created" && toolbar.selectedTool != Enums.Tools.Erase) {
+                if (canvas.temp.type == Enums.Tools.Draw) {
+                    canvas.temp.points.push(mouse);
+                } else {
+                    canvas.temp.x = mouse.x;
+                    canvas.temp.y = mouse.y;
+                }
+
+                canvas.temp = Object.assign({}, canvas.temp);
             }
-
-            else if (selectionRectangle.state == "created" && canvas.temp.type != Enums.Tools.Erase) {
-
-               if (canvas.temp.type == Enums.Tools.Draw) {
-                  canvas.temp.points.push(mouse);
-               }
-               else {
-                  canvas.temp.x = mouse.x;
-                  canvas.temp.y = mouse.y;
-               }
-
-               canvas.temp = Object.assign({}, canvas.temp)
-            }
-
         }
-            // qmlformat on
     }
     HoverHandler {
         id: hoverhandler
