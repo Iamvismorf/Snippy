@@ -1,3 +1,4 @@
+// I don't like this singleton at all, but I don't like passing around toolbar and canvas either, so ig we are stuck with this one
 pragma Singleton
 
 import Quickshell

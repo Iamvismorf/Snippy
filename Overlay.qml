@@ -126,7 +126,7 @@ PanelWindow {
     }
     HoverHandler {
         id: hoverhandler
-        cursorShape: Qt.CrossCursor
+        cursorShape: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select ? Qt.ArrowCursor : Qt.CrossCursor
     }
 
     FocusScope {
@@ -288,15 +288,6 @@ PanelWindow {
         Layout.topMargin: 2
         Layout.bottomMargin: Layout.topMargin
         color: Qt.lighter(Config.black, 4.5)
-    }
-
-    component Icon: KirigamiIcon {
-        // required property var callBack
-
-        Layout.alignment: Qt.AlignVCenter
-
-        size: Config.toolbarIconSize
-        fillColor: Config.gray
     }
 
     // Timer {
