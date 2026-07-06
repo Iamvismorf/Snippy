@@ -334,7 +334,7 @@ Rectangle {
     HoverHandler {
         cursorShape: Qt.ArrowCursor
     }
-    TapHandler {
+    SingleTapHandler {
         gesturePolicy: TapHandler.ReleaseWithinBounds
     }
 
@@ -366,7 +366,7 @@ Rectangle {
             id: hoverHandler
             cursorShape: Qt.PointingHandCursor
         }
-        TapHandler {
+        SingleTapHandler {
             id: tapHandler
         }
     }

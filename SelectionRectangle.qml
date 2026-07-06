@@ -20,19 +20,21 @@ Rectangle {
         State {
             name: "notCreated"
             PropertyChanges {
-                target: root
-                opacity: 0
+                root.opacity: 0
             }
         },
         State {
             name: "creating"
             PropertyChanges {
-                target: root
-                opacity: 1
+                root.active: true
+                root.opacity: 1
             }
         },
         State {
             name: "created"
+            PropertyChanges {
+                root.active: false
+            }
         }
     ]
     transitions: [
@@ -132,7 +134,7 @@ Rectangle {
                 cursorShape: root.locked ? Qt.ForbiddenCursor : modelData.cursor
             }
 
-            TapHandler {
+            SingleTapHandler {
                 gesturePolicy: TapHandler.ReleaseWithinBounds
             }
 
@@ -170,7 +172,7 @@ Rectangle {
     }
 
     HoverHandler {
-        enabled: !root.locked
+        enabled: !root.locked && root.state == "created"
         cursorShape: Qt.ArrowCursor
     }
 

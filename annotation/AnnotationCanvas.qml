@@ -10,7 +10,7 @@ import "../"
 Item {
     id: root
     property int tempId: 0
-    property var temp: {}
+    property var temp: ({})
 
     Repeater {
         model: ScriptModel {
@@ -22,7 +22,7 @@ Item {
                 let erasedIds = new Set();
                 for (let i = 0; i <= Globals.cstep; i++) {
                     if (Globals.history[i]?.type == Enums.Tools.Erase) {
-                        Globals.history[i].ids.forEach(id => erasedIds.add(id));
+                        Globals.history[i]?.ids.forEach(id => erasedIds.add(id));
                     }
                 }
                 Globals.history.slice(0, Globals.cstep + 1).filter(ann => !erasedIds.has(ann.id));
@@ -71,5 +71,12 @@ Item {
             ids: ids,
             all: true
         });
+    }
+    function commitTemp() {
+        if (!Lib.isEmpty(temp)) {
+            pushToHistory(temp);
+            temp = ({});
+            tempId++;
+        }
     }
 }

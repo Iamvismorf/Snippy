@@ -34,5 +34,5 @@ Singleton {
     // onCstepChanged: console.log(cstep)
     // onSelectedToolChanged: console.log(Qt.enumValueToStrings(Enums.Tools, selectedTool))
 
-    // onHistoryChanged: console.log(JSON.stringify(history))
+    onHistoryChanged: console.log(JSON.stringify(history, null, " "))
 }
