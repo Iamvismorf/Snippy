@@ -41,17 +41,15 @@ PanelWindow {
                     selectionRectangle.state = "creating";
                 }
             } else {
-                if (selectionRectangle.state == "created") { // we know this isn't triggered for draw, erase, select and steps
+                if (selectionRectangle.state == "created") {
                     canvas.commitTemp();
-                    return;
-                }
-
-                if (selectionRectangle.implicitWidth < Config.minSelectionWidth || selectionRectangle.implicitHeight < Config.minSelectionHeight) {
+                } else if (selectionRectangle.state == "creating" && selectionRectangle.implicitWidth < Config.minSelectionWidth || selectionRectangle.implicitHeight < Config.minSelectionHeight) {
                     selectionRectangle.destruct();
                 } else {
                     selectionRectangle.state = "created";
                 }
             }
+            selectionRectangle.active = active;
         }
         onCentroidChanged: {
             if (!active)
@@ -67,8 +65,8 @@ PanelWindow {
                     id: canvas.tempId,
                     startX: centroid.pressPosition.x,
                     startY: centroid.pressPosition.y,
-                    x: centroid.position.x,
-                    y: centroid.position.y,
+                    endX: centroid.position.x,
+                    endY: centroid.position.y,
                     type: Globals.selectedTool,
                     thickness: Globals.thickness,
                     color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
@@ -78,25 +76,34 @@ PanelWindow {
     }
     SingleTapHandler {
         id: tapHandler
+        property point _lastPosition
+        property point _cumulativeDelta: Qt.point(0, 0)
+
         enabled: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Draw || Globals.selectedTool == Enums.Tools.Steps
         gesturePolicy: TapHandler.WithinBounds
 
         onPressedChanged: {
             if (!pressed) {
+                _cumulativeDelta = Qt.point(0, 0);
                 canvas.commitTemp();
                 return;
             }
+            let child = canvas.childAt(point.pressPosition.x, point.pressPosition.y);
             if (Globals.selectedTool == Enums.Tools.Erase) {
-                let child = canvas.childAt(point.pressPosition.x, point.pressPosition.y)?.annotation?.id;
-                if (child != undefined) {
+                if (child) {
                     canvas.pushToHistory({
                         type: Enums.Tools.Erase,
-                        ids: [child]
+                        ids: [child.annotation.id]
                     });
                 }
+            } else if (Globals.selectedTool == Enums.Tools.Select) {
+                _lastPosition = point.pressPosition;
+                Globals.selectedChild = child;
+                Globals.selectedChildId = child?.annotation?.id ?? -1;
             }
         }
         onPointChanged: {
+            selectionRectangle.active = active && point.velocity.length() > 0;
             if (active) {
                 if (Globals.selectedTool == Enums.Tools.Draw) {
                     let pts = canvas.temp?.points ?? [];
@@ -104,9 +111,28 @@ PanelWindow {
                     canvas.temp = {
                         id: canvas.tempId,
                         type: Enums.Tools.Draw,
+                        startX: point.pressPosition.x,
+                        startY: point.pressPosition.y,
                         points: pts,
                         thickness: Globals.thickness,
                         color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                    };
+                } else if (Globals.selectedTool == Enums.Tools.Select && Globals.selectedChild && point.velocity.length() > 0) {
+                    let deltaX = point.position.x - _lastPosition.x;
+                    let deltaY = point.position.y - _lastPosition.y;
+
+                    Globals.selectedChild.x += deltaX;
+                    Globals.selectedChild.y += deltaY;
+
+                    _cumulativeDelta.x += deltaX;
+                    _cumulativeDelta.y += deltaY;
+
+                    _lastPosition = point.position;
+                    canvas.temp = {
+                        type: Enums.Tools.Select,
+                        target: Globals.selectedChild.annotation.id,
+                        deltaX: _cumulativeDelta.x,
+                        deltaY: _cumulativeDelta.y
                     };
                 }
             }
@@ -288,13 +314,13 @@ PanelWindow {
                 minimum: 0
                 maximum: root.height - selectionRectangle.height
             }
-            onActiveChanged: selectionRectangle.active = active
-        }
-        SingleTapHandler {
-            enabled: selectionRectangleDragHandler.enabled
-
-            gesturePolicy: TapHandler.WithinBounds
-            onActiveChanged: selectionRectangle.active = active
+            onGrabChanged: t => {
+                if (t == PointerDevice.GrabPassive) {
+                    selectionRectangle.active = true;
+                } else if (t == PointerDevice.UngrabPassive) {
+                    selectionRectangle.active = false;
+                }
+            }
         }
     }
     Item {

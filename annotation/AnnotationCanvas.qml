@@ -20,12 +20,41 @@ Item {
                 }
 
                 let erasedIds = new Set();
+                let transforms = new Map();
+
                 for (let i = 0; i <= Globals.cstep; i++) {
                     if (Globals.history[i]?.type == Enums.Tools.Erase) {
                         Globals.history[i]?.ids.forEach(id => erasedIds.add(id));
+                    } else if (Globals.history[i]?.type == Enums.Tools.Select) {
+                        let temp = Globals.history[i];
+                        if (!transforms.has(temp.target)) {
+                            transforms.set(temp.target, {
+                                deltaX: 0,
+                                deltaY: 0
+                            });
+                        }
+                        let t = transforms.get(temp.target);
+                        t.deltaX += temp.deltaX;
+                        t.deltaY += temp.deltaY;
                     }
                 }
-                Globals.history.slice(0, Globals.cstep + 1).filter(ann => !erasedIds.has(ann.id));
+
+                let out = [];
+                for (let i = 0; i <= Globals.cstep; i++) {
+                    let temp = Globals.history[i];
+                    if (temp?.type != Enums.Tools.Select && temp?.type != Enums.Tools.Erase && !erasedIds.has(temp?.id)) {
+                        let t = transforms.get(temp?.id) || {
+                            deltaX: 0,
+                            deltaY: 0
+                        };
+                        out.push(Object.assign({}, temp, {
+                            offsetX: t.deltaX,
+                            offsetY: t.deltaY
+                        }));
+                    }
+                }
+                // return Globals.history.slice(0, Globals.cstep + 1).filter(ann => !erasedIds.has(ann.id));
+                return out;
             }
         }
         delegate: AnnotationShape {
@@ -51,6 +80,10 @@ Item {
 
     //no need for safe guard because we safe guard by disabling the button
     function undo() { //canvas.qml
+        if (Globals.history[Globals.cstep]?.id == Globals.selectedChildId) {
+            Globals.selectedChildId = -1;
+        }
+
         Globals.cstep--;
     }
     function redo() { //canvas.qml
