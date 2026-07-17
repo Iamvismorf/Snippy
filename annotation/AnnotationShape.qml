@@ -1,4 +1,3 @@
-//todo: draw dragging because points
 import QtQuick
 import QtQuick.Shapes
 import QtQuick.Shapes.DesignHelpers
@@ -7,6 +6,7 @@ import "../"
 Item {
     id: root
     property var annotation
+    property Item backdrop: null
 
     // dude I have no idea how this works, but it solves dragging issue
     x: (ldr.item?.boundingRect?.x ?? 0) + (annotation?.offsetX ?? 0)
@@ -84,6 +84,9 @@ Item {
 
             case Enums.Tools.Highlight:
                 return highlight;
+
+            case Enums.Tools.Pixelate:
+                return pixelate;
             }
         }
         // qmlformat on
@@ -259,6 +262,24 @@ Item {
             height: Math.abs(root.annotation.endY - root.annotation.startY)
 
             color: root.annotation.color
+        }
+    }
+    //todo
+    Component {
+        id: pixelate
+        ShaderEffectSource {
+            readonly property rect boundingRect: Qt.rect(x, y, width, height)
+            readonly property int _blockSize: 10
+
+            x: Math.min(root.annotation.endX, root.annotation.startX)
+            y: Math.min(root.annotation.endY, root.annotation.startY)
+            width: Math.abs(root.annotation.endX - root.annotation.startX)
+            height: Math.abs(root.annotation.endY - root.annotation.startY)
+
+            sourceItem: root.backdrop
+            smooth: false
+            textureSize: Qt.size(sourceRect.width / _blockSize, sourceRect.height / _blockSize)
+            sourceRect: Qt.rect(root.x, root.y, width, height)
         }
     }
 }

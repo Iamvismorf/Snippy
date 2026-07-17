@@ -1,5 +1,7 @@
 .direnv/
 .git/
+build/
+.cache/
 
 .qmlls.ini
 *.png

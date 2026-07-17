@@ -11,6 +11,7 @@ Item {
     id: root
     property int tempId: 0
     property var temp: ({})
+    property Item backdrop: null
 
     Repeater {
         model: ScriptModel {
@@ -60,11 +61,13 @@ Item {
         delegate: AnnotationShape {
             required property var modelData
             annotation: modelData
+            backdrop: root.backdrop
         }
     }
 
     AnnotationShape {
         annotation: root.temp
+        backdrop: root.backdrop
         visible: !Lib.isEmpty(root.temp)
     }
 

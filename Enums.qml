@@ -25,7 +25,7 @@ Singleton {
         FilledEllipse,
         Highlight,
         Steps,
-        Blur,
+        Pixelate,
         Text
     }
 }

@@ -10,7 +10,6 @@ Rectangle {
     property real startX
     property real startY
     property bool active: false
-    onActiveChanged: console.log(active)
 
     color: "transparent"
     border.width: 1
@@ -27,15 +26,11 @@ Rectangle {
         State {
             name: "creating"
             PropertyChanges {
-                // root.active: true
                 root.opacity: 1
             }
         },
         State {
             name: "created"
-            // PropertyChanges {
-            //     root.active: false
-            // }
         }
     ]
     transitions: [
