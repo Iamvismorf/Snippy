@@ -94,7 +94,7 @@ Rectangle {
                     role: "icon"
                     DelegateChoice {
                         roleValue: "filled"
-                        delegate: IconBackgroundV1 {
+                        delegate: IconBackground {
                             id: filledComp
 
                             required property var modelData
@@ -114,7 +114,7 @@ Rectangle {
                                 return Qt.rgba(1, 1, 1, 0);
                             }
 
-                            IconV1 {
+                            Icon {
                                 id: filled
 
                                 readonly property int type: modelData.types[0]
@@ -138,7 +138,7 @@ Rectangle {
 
                                 mouseArea.enabled: false
                             }
-                            IconV1 {
+                            Icon {
                                 id: notFilled
 
                                 readonly property int type: modelData.types[1]
@@ -181,7 +181,7 @@ Rectangle {
                         }
                     }
                     DelegateChoice {
-                        delegate: IconV1 {
+                        delegate: Icon {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.type == Enums.Tools.Select || modelData.type == Enums.Tools.Erase)
@@ -253,7 +253,7 @@ Rectangle {
                     role: "icon"
                     DelegateChoice {
                         roleValue: "clear"
-                        delegate: IconV1 {
+                        delegate: Icon {
                             required property var modelData
 
                             source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
@@ -266,7 +266,7 @@ Rectangle {
                     }
 
                     DelegateChoice {
-                        delegate: IconV1 {
+                        delegate: Icon {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.action == Enums.Actions.Undo)
@@ -310,7 +310,7 @@ Rectangle {
                         action: Enums.Actions.Abort
                     }
                 ]
-                delegate: IconV1 {
+                delegate: Icon {
                     required property var modelData
 
                     readonly property bool _isCloseIcon: modelData.action == Enums.Actions.Abort
@@ -346,6 +346,42 @@ Rectangle {
         InOutAnim {}
     }
 
+    SpinBox {
+        id: spinbox
+
+        anchors.top: parent.bottom
+
+        value: Globals.step
+        editable: true
+        live: true
+        from: -99
+        to: 99
+        wrap: true
+        locale: Qt.locale("C")
+        valueFromText: function (t, _) {
+            let parsed = parseInt(t);
+            return isNaN(parsed) ? value : parsed;
+        }
+        Keys.onEscapePressed: spinbox.focus = false
+
+        onValueChanged: Globals.step = value
+
+        Connections {
+            target: spinbox.contentItem
+            function onActiveFocusChanged() {
+                if (spinbox.contentItem.text == "" && !spinbox.contentItem.activeFocus) {
+                    Globals.step = 1;
+                }
+            }
+        }
+        Connections {
+            target: Globals
+            function onStepChanged() {
+                Globals.step = Globals.step > spinbox.to ? spinbox.from : Globals.step;
+            }
+        }
+    }
+
     component Seperator: Rectangle {
         width: 1
         Layout.fillHeight: true
@@ -354,7 +390,7 @@ Rectangle {
         Layout.bottomMargin: Layout.topMargin
         color: Config.gray
     }
-    component IconBackgroundV1: StyledRectangle {
+    component IconBackground: StyledRectangle {
         property alias mouseArea: mouseArea
         property int innerPadding: 4
 
@@ -372,7 +408,7 @@ Rectangle {
         }
     }
 
-    component IconV1: IconBackgroundV1 {
+    component Icon: IconBackground {
         id: iconComp
         property alias source: snippyIcon.source
         property int size: Config.toolbarIconSize
