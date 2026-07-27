@@ -1,6 +1,8 @@
 import QtQuick
 import Quickshell
 import qs.components
+import Snippy as Snippy
+
 import "../"
 
 Item {
@@ -59,15 +61,16 @@ Item {
             Component.onCompleted: root._selectedColor = itemAt(1)
         }
     }
-    KirigamiIcon {
+    Snippy.SvgIcon {
         id: arrow
-        sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/triangle.svg`))
+        source: Quickshell.iconPath(Quickshell.shellPath(`assets/triangle.svg`))
 
         x: root._selectedColor?.mapToItem(wrapper, 0, 0).x + (root._selectedColor?.width - implicitWidth) / 2
         y: root.y - implicitHeight
 
-        size: 10
-        fillColor: Config.accent
+        implicitWidth: 10
+        implicitHeight: implicitWidth
+        color: Config.accent
 
         Behavior on x {
             DeccelAnim {}

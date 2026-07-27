@@ -1,11 +1,13 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import qs.components
 import qs.annotation
 import "../"
+import Snippy as Snippy
 
 Rectangle {
     id: root
@@ -19,8 +21,8 @@ Rectangle {
 
     radius: 10
     color: Config.white
-    clip: true
-    opacity: !selectionRectangle.active && selectionRectangle.state == "created" //todo: should also be when drawing
+    // clip: true
+    opacity: !selectionRectangle.active && selectionRectangle.state == "created"
     visible: opacity
 
     RowLayout {
@@ -80,8 +82,8 @@ Rectangle {
                         type: Enums.Tools.Steps
                     },
                     {
-                        icon: "blur",
-                        type: Enums.Tools.Blur
+                        icon: "pixelate",
+                        type: Enums.Tools.Pixelate
                     },
                     {
                         icon: "textAlt",
@@ -92,7 +94,7 @@ Rectangle {
                     role: "icon"
                     DelegateChoice {
                         roleValue: "filled"
-                        delegate: IconBackground {
+                        delegate: IconBackgroundV1 {
                             id: filledComp
 
                             required property var modelData
@@ -100,26 +102,27 @@ Rectangle {
 
                             implicitWidth: _current.implicitWidth
                             implicitHeight: _current.implicitHeight
+                            innerPadding: 0
 
                             color: {
                                 if (Globals.selectedTool == _current.type) {
                                     return Config.accent;
                                 }
-                                if (hoverHandler.hovered) {
+                                if (mouseArea.containsMouse) {
                                     return Config.lightGray;
                                 }
                                 return Qt.rgba(1, 1, 1, 0);
                             }
 
-                            IconV2 {
+                            IconV1 {
                                 id: filled
 
                                 readonly property int type: modelData.types[0]
-                                sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icons[0]}.svg`))
+                                source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icons[0]}.svg`))
                                 color: "transparent"
                                 property string eyedih: "filled"
 
-                                icon.fillColor: {
+                                icon.color: {
                                     if (Globals.selectedTool == type) {
                                         return Config.white;
                                     }
@@ -133,18 +136,17 @@ Rectangle {
                                     InOutAnim {}
                                 }
 
-                                tapHandler.enabled: false
-                                hoverHandler.enabled: false
+                                mouseArea.enabled: false
                             }
-                            IconV2 {
+                            IconV1 {
                                 id: notFilled
 
                                 readonly property int type: modelData.types[1]
-                                sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icons[1]}.svg`))
+                                source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icons[1]}.svg`))
                                 color: "transparent"
                                 property string eyedih: "notfilled"
 
-                                icon.fillColor: {
+                                icon.color: {
                                     if (Globals.selectedTool == type) {
                                         return Config.white;
                                     }
@@ -158,13 +160,12 @@ Rectangle {
                                     InOutAnim {}
                                 }
 
-                                tapHandler.enabled: false
-                                hoverHandler.enabled: false
+                                mouseArea.enabled: false
                             }
-                            tapHandler {
+                            mouseArea {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                onTapped: (e, b) => {
-                                    if (b == Qt.LeftButton) {
+                                onClicked: m => {
+                                    if (m.button == Qt.LeftButton) {
                                         if (Globals.selectedTool == filledComp._current.type) {
                                             Globals.selectedTool = Enums.Tools.None;
                                         } else {
@@ -179,9 +180,8 @@ Rectangle {
                             }
                         }
                     }
-
                     DelegateChoice {
-                        delegate: IconV2 {
+                        delegate: IconV1 {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.type == Enums.Tools.Select || modelData.type == Enums.Tools.Erase)
@@ -190,19 +190,18 @@ Rectangle {
                                     return true;
                             }
 
-                            sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
+                            source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
 
                             color: {
                                 if (Globals.selectedTool == modelData.type) {
                                     return Config.accent;
                                 }
-                                if (hoverHandler.hovered) {
+                                if (mouseArea.containsMouse) {
                                     return Config.lightGray;
                                 }
                                 return Qt.rgba(1, 1, 1, 0);
                             }
-                            //here
-                            icon.fillColor: {
+                            icon.color: {
                                 if (!_available) {
                                     return Config.gray;
                                 }
@@ -212,13 +211,14 @@ Rectangle {
                                 return Config.black;
                             }
 
-                            hoverHandler.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
-                            tapHandler.enabled: _available
-                            tapHandler.onTapped: {
-                                if (Globals.selectedTool == modelData.type) {
-                                    Globals.selectedTool = Enums.Tools.None;
-                                } else {
-                                    Globals.selectedTool = modelData.type;
+                            mouseArea.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
+                            mouseArea.onClicked: {
+                                if (_available) {
+                                    if (Globals.selectedTool == modelData.type) {
+                                        Globals.selectedTool = Enums.Tools.None;
+                                    } else {
+                                        Globals.selectedTool = modelData.type;
+                                    }
                                 }
                             }
                         }
@@ -253,20 +253,20 @@ Rectangle {
                     role: "icon"
                     DelegateChoice {
                         roleValue: "clear"
-                        delegate: IconV2 {
+                        delegate: IconV1 {
                             required property var modelData
 
-                            sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
+                            source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
 
-                            icon.fillColor: Config.red
+                            icon.color: Config.red
 
-                            color: hoverHandler.hovered ? Qt.lighter(Config.red, 1.65) : Qt.rgba(1, 1, 1, 0)
-                            tapHandler.onTapped: root.action(modelData.action)
+                            color: mouseArea.containsMouse ? Qt.lighter(Config.red, 1.65) : Qt.rgba(1, 1, 1, 0)
+                            mouseArea.onClicked: root.action(modelData.action)
                         }
                     }
 
                     DelegateChoice {
-                        delegate: IconV2 {
+                        delegate: IconV1 {
                             required property var modelData
                             readonly property bool _available: {
                                 if (modelData.action == Enums.Actions.Undo)
@@ -274,16 +274,19 @@ Rectangle {
                                 return Globals.cstep != Globals.history.length - 1;
                             }
 
-                            sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
+                            source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
                             innerPadding: 2
 
-                            icon.fillColor: _available ? Config.black : Config.gray
-                            hoverHandler.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
-                            tapHandler.enabled: _available
-                            tapHandler.onTapped: root.action(modelData.action)
+                            icon.color: _available ? Config.black : Config.gray
+                            mouseArea.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
+                            mouseArea.onClicked: {
+                                if (_available) {
+                                    root.action(modelData.action);
+                                }
+                            }
 
                             radius: 100
-                            color: hoverHandler.hovered ? Config.lightGray : Qt.rgba(1, 1, 1, 0)
+                            color: mouseArea.containsMouse ? Config.lightGray : Qt.rgba(1, 1, 1, 0)
                         }
                     }
                 }
@@ -307,14 +310,14 @@ Rectangle {
                         action: Enums.Actions.Abort
                     }
                 ]
-                delegate: IconV2 {
+                delegate: IconV1 {
                     required property var modelData
 
                     readonly property bool _isCloseIcon: modelData.action == Enums.Actions.Abort
 
-                    sauce: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
+                    source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
                     color: {
-                        if (hoverHandler.hovered) {
+                        if (mouseArea.containsMouse) {
                             if (_isCloseIcon) {
                                 return Qt.lighter(Config.red, 1.65);
                             } else {
@@ -324,8 +327,8 @@ Rectangle {
                         return Qt.rgba(1, 1, 1, 0);
                     }
 
-                    icon.fillColor: _isCloseIcon ? Config.red : Config.black
-                    tapHandler.onTapped: root.action(modelData.action)
+                    icon.color: _isCloseIcon ? Config.red : Config.black
+                    mouseArea.onClicked: root.action(modelData.action)
                 }
             }
         }
@@ -351,10 +354,9 @@ Rectangle {
         Layout.bottomMargin: Layout.topMargin
         color: Config.gray
     }
-
-    component IconBackground: StyledRectangle {
-        property alias hoverHandler: hoverHandler
-        property alias tapHandler: tapHandler
+    component IconBackgroundV1: StyledRectangle {
+        property alias mouseArea: mouseArea
+        property int innerPadding: 4
 
         radius: 4
         Behavior on color {
@@ -362,37 +364,34 @@ Rectangle {
                 duration: 275
             }
         }
-        HoverHandler {
-            id: hoverHandler
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-        }
-        SingleTapHandler {
-            id: tapHandler
         }
     }
 
-    component IconV2: IconBackground {
+    component IconV1: IconBackgroundV1 {
         id: iconComp
+        property alias source: snippyIcon.source
+        property int size: Config.toolbarIconSize
+        property alias iconColor: snippyIcon.color
 
-        property alias sauce: kirigamiIcon.sauce
-        property alias size: kirigamiIcon.size
-        property alias fillColor: kirigamiIcon.fillColor
+        property alias icon: snippyIcon
 
-        property alias icon: kirigamiIcon
+        implicitWidth: snippyIcon.implicitWidth + innerPadding * 2
+        implicitHeight: snippyIcon.implicitHeight + innerPadding * 2
 
-        property int innerPadding: 4
-
-        implicitWidth: kirigamiIcon.implicitWidth + innerPadding * 2
-        implicitHeight: kirigamiIcon.implicitHeight + innerPadding * 2
-
-        KirigamiIcon {
-            id: kirigamiIcon
+        Snippy.SvgIcon {
+            id: snippyIcon
 
             anchors.centerIn: parent
-            size: Config.toolbarIconSize
-            fillColor: Config.black
+            implicitWidth: iconComp.size
+            implicitHeight: iconComp.size
+            color: Config.black
 
-            Behavior on fillColor {
+            Behavior on color {
                 ColorAnimation {
                     duration: 275
                 }

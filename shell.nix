@@ -11,7 +11,6 @@ in
       ++ [
         pkgs.qt6.wrapQtAppsHook
         pkgs.makeWrapper
-        pkgs.kdePackages.kirigami
         pkgs.qtcreator
         pkgs.cmake
         pkgs.ninja
