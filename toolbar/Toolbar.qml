@@ -228,9 +228,10 @@ Rectangle {
         }
         Seperator {}
 
-        ColorPalette {
-            id: palette
-        }
+        ColorPalette {}
+        Seperator {}
+
+        Thickness {}
         Seperator {}
 
         RowGroup {
@@ -344,42 +345,6 @@ Rectangle {
     Behavior on opacity {
         enabled: selectionRectangle.state != "notCreated"
         InOutAnim {}
-    }
-
-    SpinBox {
-        id: spinbox
-
-        anchors.top: parent.bottom
-
-        value: Globals.step
-        editable: true
-        live: true
-        from: -99
-        to: 99
-        wrap: true
-        locale: Qt.locale("C")
-        valueFromText: function (t, _) {
-            let parsed = parseInt(t);
-            return isNaN(parsed) ? value : parsed;
-        }
-        Keys.onEscapePressed: spinbox.focus = false
-
-        onValueChanged: Globals.step = value
-
-        Connections {
-            target: spinbox.contentItem
-            function onActiveFocusChanged() {
-                if (spinbox.contentItem.text == "" && !spinbox.contentItem.activeFocus) {
-                    Globals.step = 1;
-                }
-            }
-        }
-        Connections {
-            target: Globals
-            function onStepChanged() {
-                Globals.step = Globals.step > spinbox.to ? spinbox.from : Globals.step;
-            }
-        }
     }
 
     component Seperator: Rectangle {

@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Shapes
 import QtQuick.Shapes.DesignHelpers
+import qs.lib
+import qs.components
 import "../"
 
 Item {
@@ -87,6 +89,9 @@ Item {
 
             case Enums.Tools.Pixelate:
                 return pixelate;
+
+            case Enums.Tools.Steps:
+                return step;
             }
         }
         // qmlformat on
@@ -264,7 +269,7 @@ Item {
             color: root.annotation.color
         }
     }
-    //todo
+
     Component {
         id: pixelate
         ShaderEffectSource {
@@ -280,6 +285,32 @@ Item {
             smooth: false
             textureSize: Qt.size(sourceRect.width / _blockSize, sourceRect.height / _blockSize)
             sourceRect: Qt.rect(root.x, root.y, width, height)
+        }
+    }
+
+    Component {
+        id: step
+        Rectangle {
+            readonly property rect boundingRect: Qt.rect(x, y, width, height)
+
+            x: root.annotation.startX - width / 2
+            y: root.annotation.startY - height / 2
+            width: 8 * root.annotation.thickness
+            height: 8 * root.annotation.thickness
+
+            radius: 1000
+            color: root.annotation.color
+
+            StyledText {
+                text: root.annotation.step
+                anchors.centerIn: parent
+                font.pointSize: 3 * root.annotation.thickness
+                color: Lib.isDark(root.annotation.color) ? Config.white : Config.black
+
+                font.features: {
+                    "tnum": 1
+                }
+            }
         }
     }
 }

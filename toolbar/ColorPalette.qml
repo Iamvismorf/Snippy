@@ -25,7 +25,7 @@ Item {
             StyledRectangle {
                 required property color modelData
 
-                width: Config.toolbarIconSize
+                width: Config.toolbarIconSize * 0.9
                 height: width
 
                 animatedColor: true

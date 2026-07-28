@@ -11,17 +11,15 @@ Singleton {
 
     property int cstep: -1
     property var history: []
-    property int thickness: 4 //todo: make available in toolbar.qml
+    property int selectedThickness
     property var selectedChild
     property int selectedChildId: -1 // needed to survive repeater's rebuilding
+    property int step: 1
 
     onSelectedToolChanged: {
-        selectedChild = Qt.binding(function () {
-            return null;
-        });
-        selectedChildId = Qt.binding(function () {
-            return -1;
-        });
+        selectedChild = null;
+        selectedChildId = -1;
+        step = 1;
     }
 
     // function pushToHistory(ann) { // canvas.qml

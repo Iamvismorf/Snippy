@@ -115,4 +115,9 @@ Item {
             tempId++;
         }
     }
+    // makes no sence to guard against empty obj?
+    function commitShape(shape) {
+        pushToHistory(shape);
+        tempId++;
+    }
 }
