@@ -62,6 +62,7 @@ Item {
         }
     }
     Snippy.SvgIcon {
+        // KirigamiIcon {
         id: arrow
         source: Quickshell.iconPath(Quickshell.shellPath(`assets/triangle.svg`))
 

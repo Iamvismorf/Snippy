@@ -31,9 +31,18 @@ PanelWindow {
     // WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
 
+    SingleTapHandler {
+        enabled: dragHandler.enabled
+        gesturePolicy: TapHandler.WithinBounds
+        onActiveChanged: selectionRectangle.active = active
+    }
     DragHandler {
+        id: dragHandler
         enabled: !tapHandler.enabled
         target: null
+        // grabPermissions: PointerHandler.TakeOverForbidden
+        grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
+
         onActiveChanged: {
             if (active) {
                 if (!selectionRectangle.locked) {
@@ -68,7 +77,7 @@ PanelWindow {
                     endX: centroid.position.x,
                     endY: centroid.position.y,
                     type: Globals.selectedTool,
-                    thickness: Globals.thickness,
+                    thickness: Globals.selectedThickness,
                     color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
                 };
             }
@@ -100,6 +109,17 @@ PanelWindow {
                 _lastPosition = point.pressPosition;
                 Globals.selectedChild = child;
                 Globals.selectedChildId = child?.annotation?.id ?? -1;
+            } else if (Globals.selectedTool == Enums.Tools.Steps) {
+                canvas.commitShape({
+                    id: canvas.tempId,
+                    type: Enums.Tools.Steps,
+                    startX: point.pressPosition.x,
+                    startY: point.pressPosition.y,
+                    thickness: Globals.selectedThickness,
+                    step: Globals.step,
+                    color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                });
+                Globals.step++;
             }
         }
         onPointChanged: {
@@ -114,7 +134,7 @@ PanelWindow {
                         startX: point.pressPosition.x,
                         startY: point.pressPosition.y,
                         points: pts,
-                        thickness: Globals.thickness,
+                        thickness: Globals.selectedThickness,
                         color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
                     };
                 } else if (Globals.selectedTool == Enums.Tools.Select && Globals.selectedChild && point.velocity.length() > 0) {
@@ -139,104 +159,12 @@ PanelWindow {
         }
     }
 
-    // PointHandler {
-    //     id: pointHandler
-    //     acceptedButtons: Qt.LeftButton
-    //
-    //     onActiveChanged: {
-    //         if (active) {
-    //             const mouse = point.position;
-    //
-    //             if (!selectionRectangle.locked) { // no tools are selected
-    //                 selectionRectangle.destruct(); // fixes weird toolbar anim
-    //                 selectionRectangle.active = true;
-    //
-    //                 // selectionRectangle.x = mouse.x;
-    //                 // selectionRectangle.y = mouse.y;
-    //                 selectionRectangle.startX = mouse.x;
-    //                 selectionRectangle.startY = mouse.y;
-    //
-    //                 selectionRectangle.state = "creating";
-    //             } else {
-    //                 if (Globals.selectedTool == Enums.Tools.Erase) {
-    //                     let annotationId = canvas.childAt(mouse.x, mouse.y)?.annotation?.id;
-    //                     if (annotationId != undefined) {
-    //                         canvas.pushToHistory({
-    //                             type: Enums.Tools.Erase,
-    //                             ids: [annotationId]
-    //                         });
-    //                     }
-    //                 } else if (Globals.selectedTool == Enums.Tools.Select) {
-    //                     //todo: penis
-    //                 } else {
-    //                     canvas.temp = ({
-    //                             id: canvas.tempId,
-    //                             startX: mouse.x,
-    //                             startY: mouse.y,
-    //                             x: mouse.x,
-    //                             y: mouse.y,
-    //                             type: Globals.selectedTool,
-    //                             points: [],
-    //                             thickness: Globals.thickness,
-    //                             color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
-    //                         });
-    //                     canvas.tempId++;
-    //                 }
-    //             }
-    //         } else {
-    //             //todo: selection or eraser
-    //             if (selectionRectangle.state == "created") { // we know this is triggered only when a tool is selected
-    //                 if (!Lib.isEmpty(canvas.temp)) {
-    //                     canvas.pushToHistory(canvas.temp);
-    //                     canvas.temp = {};
-    //                 }
-    //             }
-    //
-    //             if (selectionRectangle.active) {
-    //                 selectionRectangle.active = false;
-    //             }
-    //
-    //             if (selectionRectangle.implicitWidth < Config.minSelectionWidth || selectionRectangle.implicitHeight < Config.minSelectionHeight) {
-    //                 selectionRectangle.destruct();
-    //             } else {
-    //                 selectionRectangle.state = "created";
-    //             }
-    //         }
-    //     }
-    //     onPointChanged: {
-    //         const mouse = point.position;
-    //
-    //         if (!active)
-    //             return;
-    //
-    //         if (selectionRectangle.state == "creating") {
-    //             const widthTmp = Math.abs(mouse.x - selectionRectangle.startX);
-    //             const heightTmp = Math.abs(mouse.y - selectionRectangle.startY);
-    //             if (widthTmp == 0 && heightTmp == 0) {
-    //                 return;
-    //             }
-    //
-    //             selectionRectangle.x = Math.min(mouse.x, selectionRectangle.startX);
-    //             selectionRectangle.y = Math.min(mouse.y, selectionRectangle.startY);
-    //             selectionRectangle.implicitWidth = widthTmp;
-    //             selectionRectangle.implicitHeight = heightTmp;
-    //         } else if (selectionRectangle.state == "created" && Globals.selectedTool != Enums.Tools.Erase) {
-    //             if (canvas.temp.type == Enums.Tools.Draw) {
-    //                 canvas.temp.points.push(mouse);
-    //             } else {
-    //                 canvas.temp.x = mouse.x;
-    //                 canvas.temp.y = mouse.y;
-    //             }
-    //
-    //             canvas.temp = Object.assign({}, canvas.temp);
-    //         }
-    //     }
-    // }
     HoverHandler {
         id: hoverhandler
         cursorShape: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select ? Qt.ArrowCursor : Qt.CrossCursor
     }
 
+    //todo: wrap this around components?
     FocusScope {
         width: parent.width
         height: parent.height
@@ -292,14 +220,22 @@ PanelWindow {
             AnnotationCanvas {
                 id: canvas
                 anchors.fill: parent
+
+                backdrop: screenCopy
             }
         }
     }
+
     SelectionRectangle {
         id: selectionRectangle
 
         readonly property bool locked: Globals.selectedTool != Enums.Tools.None
 
+        // this is messed up
+        SingleTapHandler {
+            enabled: !selectionRectangle.locked
+            gesturePolicy: TapHandler.WithinBounds
+        }
         DragHandler {
             id: selectionRectangleDragHandler
             enabled: !selectionRectangle.locked
@@ -326,7 +262,7 @@ PanelWindow {
     Item {
         anchors.fill: parent
         layer.enabled: true
-        opacity: 0.6
+        opacity: 0.1
 
         Dim {
             //top
@@ -364,10 +300,40 @@ PanelWindow {
     Toolbar {
         id: toolbar
         selectionRectangle: selectionRectangle
+        // PersistentProperties {
+        //     id: persist
+        //     reloadableId: "persistedStates"
+        //
+        //     property real x: selectionRectangle.width + selectionRectangle.x
+        //     property real y: selectionRectangle.height + selectionRectangle.y
+        // }
+        // x: persist.x
+        // y: persist.y
+        // opacity: 1
+
+        // readonly property int _margin: 16
+        // x: {
+        //     let pos = selectionRectangle.x + (selectionRectangle.width - width) / 2;
+        //     return pos + width > root.modelData.width - _margin / 2 ? root.modelData.width - width - _margin / 2 : pos < root.modelData.x + _margin / 2 ? root.modelData.x + _margin / 2 : pos;
+        // }
+        // y: {
+        //     if (opacity != 0) {
+        //         return y;
+        //     }
+        //     let posWithoutMargin = selectionRectangle.y + selectionRectangle.height;
+        //     return posWithoutMargin + height + _margin > root.modelData.height ? posWithoutMargin - height - _margin : posWithoutMargin + _margin;
+        // }
 
         anchors.top: selectionRectangle.bottom
         anchors.horizontalCenter: selectionRectangle.horizontalCenter
         anchors.topMargin: 24
+
+        // x: 233.67578125
+        // y: 863.484375
+        // opacity: 1
+        // anchors.bottom: parent.bottom
+        // anchors.horizontalCenter: parent.horizontalCenter
+        // anchors.bottomMargin: 90
 
         onAction: action => {
             switch (action) {
