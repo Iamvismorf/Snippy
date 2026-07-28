@@ -9,7 +9,6 @@ SvgIcon::SvgIcon(QQuickItem *parent)
 {
   setImplicitSize(32, 32);
   m_svgRenderer.setAspectRatioMode(Qt::KeepAspectRatio);
-  setSmooth(false);
 
   connect(this, &SvgIcon::sourceChanged, this, [this]() {
     m_svgRenderer.load(m_source.path());
@@ -23,9 +22,10 @@ void SvgIcon::paint(QPainter *painter) {
   if (m_cachedPixmap.isNull()) {
     return;
   }
-  painter->drawPixmap(QPointF(width() / 2.0f - m_cachedPixmap.width() / 2.0f,
-                              height() / 2.0f - m_cachedPixmap.height() / 2.0f),
-                      m_cachedPixmap);
+  painter->drawPixmap(
+      QPointF(qRound(width() / 2.0f - m_cachedPixmap.width() / 2.0f),
+              qRound(height() / 2.0f - m_cachedPixmap.height() / 2.0f)),
+      m_cachedPixmap);
 }
 
 void SvgIcon::geometryChange(const QRectF &newGeometry,
