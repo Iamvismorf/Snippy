@@ -48,6 +48,17 @@ PanelWindow {
                 if (!selectionRectangle.locked) {
                     selectionRectangle.destruct();
                     selectionRectangle.state = "creating";
+                } else {
+                    canvas.temp = {
+                        id: canvas.tempId,
+                        startX: centroid.pressPosition.x,
+                        startY: centroid.pressPosition.y,
+                        endX: centroid.position.x,
+                        endY: centroid.position.y,
+                        type: Globals.selectedTool,
+                        thickness: Globals.selectedThickness,
+                        color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                    };
                 }
             } else {
                 if (selectionRectangle.state == "created") {
@@ -70,16 +81,11 @@ PanelWindow {
                 selectionRectangle.implicitWidth = Math.abs(centroid.position.x - centroid.pressPosition.x);
                 selectionRectangle.implicitHeight = Math.abs(centroid.position.y - centroid.pressPosition.y);
             } else if (selectionRectangle.state == "created") { // handling tools that need dragging
-                canvas.temp = {
-                    id: canvas.tempId,
-                    startX: centroid.pressPosition.x,
-                    startY: centroid.pressPosition.y,
+                Object.assign(canvas.temp, {
                     endX: centroid.position.x,
-                    endY: centroid.position.y,
-                    type: Globals.selectedTool,
-                    thickness: Globals.selectedThickness,
-                    color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
-                };
+                    endY: centroid.position.y
+                });
+                canvas.tempChanged();
             }
         }
     }
