@@ -118,33 +118,40 @@ PanelWindow {
                 _lastPosition = point.pressPosition;
                 Globals.selectedChild = child;
                 Globals.selectedChildId = child?.annotation?.id ?? -1;
+            } else if (Globals.selectedTool == Enums.Tools.Steps) {
+                canvas.temp = {
+                    id: canvas.tempId,
+                    type: Enums.Tools.Steps,
+                    startX: point.pressPosition.x,
+                    startY: point.pressPosition.y,
+                    step: Globals.step,
+                    thickness: Globals.selectedThickness,
+                    color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                };
+            } else if (Globals.selectedTool == Enums.Tools.Draw) {
+                canvas.temp = {
+                    id: canvas.tempId,
+                    type: Enums.Tools.Draw,
+                    startX: point.pressPosition.x,
+                    startY: point.pressPosition.y,
+                    points: [],
+                    thickness: Globals.selectedThickness,
+                    color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                };
             }
         }
         onPointChanged: {
             selectionRectangle.active = active && point.velocity.length() > 0;
             if (active) {
                 if (Globals.selectedTool == Enums.Tools.Draw) {
-                    let pts = canvas.temp?.points ?? [];
-                    pts.push(point.position);
-                    canvas.temp = {
-                        id: canvas.tempId,
-                        type: Enums.Tools.Draw,
-                        startX: point.pressPosition.x,
-                        startY: point.pressPosition.y,
-                        points: pts,
-                        thickness: Globals.selectedThickness,
-                        color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
-                    };
+                    canvas.temp.points.push(point.position);
+                    canvas.tempChanged();
                 } else if (Globals.selectedTool == Enums.Tools.Steps) {
-                    canvas.temp = {
-                        id: canvas.tempId,
-                        type: Enums.Tools.Steps,
-                        x: point.position.x,
-                        y: point.position.y,
-                        thickness: Globals.selectedThickness,
-                        step: Globals.step,
-                        color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
-                    };
+                    Object.assign(canvas.temp, {
+                        startX: point.position.x,
+                        startY: point.position.y
+                    });
+                    canvas.tempChanged();
                 } else if (Globals.selectedTool == Enums.Tools.Select && Globals.selectedChild && point.velocity.length() > 0) {
                     let deltaX = point.position.x - _lastPosition.x;
                     let deltaY = point.position.y - _lastPosition.y;
