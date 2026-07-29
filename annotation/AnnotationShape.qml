@@ -293,8 +293,8 @@ Item {
         Rectangle {
             readonly property rect boundingRect: Qt.rect(x, y, width, height)
 
-            x: root.annotation.startX - width / 2
-            y: root.annotation.startY - height / 2
+            x: root.annotation.x - width / 2
+            y: root.annotation.y - height / 2
             width: 8 * root.annotation.thickness
             height: 8 * root.annotation.thickness
 
