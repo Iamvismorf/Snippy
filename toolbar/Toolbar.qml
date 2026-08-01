@@ -256,13 +256,29 @@ Rectangle {
                         roleValue: "clear"
                         delegate: Icon {
                             required property var modelData
+                            readonly property bool _available: Globals.consumedHistory.length > 0
 
                             source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
 
-                            icon.color: Config.red
+                            icon.color: _available ? Config.red : Config.gray
+                            mouseArea.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
+                            mouseArea.onClicked: {
+                                if (_available) {
+                                    root.action(modelData.action);
+                                }
+                            }
 
-                            color: mouseArea.containsMouse ? Qt.lighter(Config.red, 1.65) : Qt.rgba(1, 1, 1, 0)
-                            mouseArea.onClicked: root.action(modelData.action)
+                            color: {
+                                if (mouseArea.containsMouse) {
+                                    if (_available) {
+                                        return Qt.lighter(Config.red, 1.65);
+                                    } else {
+                                        return Config.lightGray;
+                                    }
+                                } else {
+                                    return Qt.rgba(1, 1, 1, 0);
+                                }
+                            }
                         }
                     }
 
@@ -385,6 +401,7 @@ Rectangle {
         implicitHeight: snippyIcon.implicitHeight + innerPadding * 2
 
         Snippy.SvgIcon {
+            // KirigamiIcon {
             id: snippyIcon
 
             anchors.centerIn: parent
