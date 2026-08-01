@@ -28,7 +28,7 @@ PanelWindow {
     color: "transparent"
 
     WlrLayershell.layer: WlrLayer.Overlay
-    // WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
 
     SingleTapHandler {
@@ -103,41 +103,63 @@ PanelWindow {
                 if (canvas.temp.type == Enums.Tools.Steps) {
                     Globals.step++;
                 }
-                canvas.commitTemp();
-                return;
-            }
-            let child = canvas.childAt(point.pressPosition.x, point.pressPosition.y);
-            if (Globals.selectedTool == Enums.Tools.Erase) {
-                if (child) {
-                    canvas.pushToHistory({
-                        type: Enums.Tools.Erase,
-                        ids: [child.annotation.id]
-                    });
+                if (canvas.temp.type != Enums.Tools.Text) {
+                    canvas.commitTemp(); //todo: this is also executed for erase but since temp is empty it will do nothing. Idk if this is expensive or not compared to checking for glob.tools == erase and then return when entering the outer if block
+                } else {
+                    canvas.temp.state = Enums.States.Creating;
+                    canvas.tempChanged();
                 }
-            } else if (Globals.selectedTool == Enums.Tools.Select) {
-                _lastPosition = point.pressPosition;
-                Globals.selectedChild = child;
-                Globals.selectedChildId = child?.annotation?.id ?? -1;
-            } else if (Globals.selectedTool == Enums.Tools.Steps) {
-                canvas.temp = {
-                    id: canvas.tempId,
-                    type: Enums.Tools.Steps,
-                    startX: point.pressPosition.x,
-                    startY: point.pressPosition.y,
-                    step: Globals.step,
-                    thickness: Globals.selectedThickness,
-                    color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
-                };
-            } else if (Globals.selectedTool == Enums.Tools.Draw) {
-                canvas.temp = {
-                    id: canvas.tempId,
-                    type: Enums.Tools.Draw,
-                    startX: point.pressPosition.x,
-                    startY: point.pressPosition.y,
-                    points: [],
-                    thickness: Globals.selectedThickness,
-                    color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
-                };
+            } else {
+                let child = canvas.childAt(point.pressPosition.x, point.pressPosition.y);
+                if (Globals.selectedTool == Enums.Tools.Erase) {
+                    if (child) {
+                        canvas.pushToHistory({
+                            type: Enums.Tools.Erase,
+                            ids: [child.annotation.id]
+                        });
+                    }
+                } else if (Globals.selectedTool == Enums.Tools.Select) {
+                    _lastPosition = point.pressPosition;
+                    Globals.selectedChild = child;
+                    Globals.selectedChildId = child?.annotation?.id ?? -1;
+                } else if (Globals.selectedTool == Enums.Tools.Steps) {
+                    canvas.temp = {
+                        id: canvas.tempId,
+                        type: Enums.Tools.Steps,
+                        startX: point.pressPosition.x,
+                        startY: point.pressPosition.y,
+                        step: Globals.step,
+                        thickness: Globals.selectedThickness,
+                        color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                    };
+                } else if (Globals.selectedTool == Enums.Tools.Draw) {
+                    canvas.temp = {
+                        id: canvas.tempId,
+                        type: Enums.Tools.Draw,
+                        startX: point.pressPosition.x,
+                        startY: point.pressPosition.y,
+                        points: [],
+                        thickness: Globals.selectedThickness,
+                        color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                    };
+                } else if (Globals.selectedTool == Enums.Tools.Text) {
+                    if (canvas.temp?.state == Enums.States.Creating) {
+                        canvas.temp.state = Enums.States.Created;
+                        canvas.requestCommitingTemp();
+                    }
+                    // console.log("ok");
+                    canvas.temp = {
+                        id: canvas.tempId,
+                        type: Enums.Tools.Text,
+                        startX: point.pressPosition.x,
+                        startY: point.pressPosition.y,
+                        thickness: Globals.selectedThickness,
+                        text: "",
+                        state: Enums.States.NotCreated,
+                        original: true,
+                        color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
+                    };
+                }
             }
         }
         onPointChanged: {
@@ -147,6 +169,12 @@ PanelWindow {
                     canvas.temp.points.push(point.position);
                     canvas.tempChanged();
                 } else if (Globals.selectedTool == Enums.Tools.Steps) {
+                    Object.assign(canvas.temp, {
+                        startX: point.position.x,
+                        startY: point.position.y
+                    });
+                    canvas.tempChanged();
+                } else if (Globals.selectedTool == Enums.Tools.Text) {
                     Object.assign(canvas.temp, {
                         startX: point.position.x,
                         startY: point.position.y
@@ -277,7 +305,7 @@ PanelWindow {
     Item {
         anchors.fill: parent
         layer.enabled: true
-        opacity: 0.1
+        opacity: 0.6
 
         Dim {
             //top

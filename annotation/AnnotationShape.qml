@@ -8,9 +8,11 @@ import "../"
 Item {
     id: root
     property var annotation
+    property Item canvas
+    property bool isTempObj: false
     property Item backdrop: null
 
-    // dude I have no idea how this works, but it solves dragging issue
+    // dude I have no idea how this works, but it solves a dragging issue
     x: (ldr.item?.boundingRect?.x ?? 0) + (annotation?.offsetX ?? 0)
     y: (ldr.item?.boundingRect?.y ?? 0) + (annotation?.offsetY ?? 0)
 
@@ -20,7 +22,7 @@ Item {
     RectangleShape {
         readonly property int _padding: 6
 
-        width: parent.width + _padding * 2
+        width: parent.width + (root.annotation?.type == Enums.Tools.Text ? 0 : _padding * 2)
         height: parent.height + _padding * 2
 
         x: Math.round(parent.width / 2) - Math.round(width / 2)
@@ -31,9 +33,9 @@ Item {
         dashPattern: [6, 8]
         radius: 0
         strokeColor: {
-            if (hoverHandler.hovered && Globals.selectedTool == Enums.Tools.Erase || Globals.selectedChildId == root.annotation.id) {
+            if (ldr.item?.activeFocus || hoverHandler.hovered && Globals.selectedTool == Enums.Tools.Erase || Globals.selectedChildId == root.annotation.id) {
                 return Config.accent;
-            } else if (hoverHandler.hovered && Globals.selectedTool == Enums.Tools.Select) {
+            } else if (hoverHandler.hovered && (Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Text)) {
                 return Config.gray;
             } else {
                 return "transparent";
@@ -50,7 +52,7 @@ Item {
     }
     HoverHandler {
         id: hoverHandler
-        enabled: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select
+        enabled: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Text && root.annotation.type == Enums.Tools.Text
     }
 
     Loader {
@@ -92,6 +94,9 @@ Item {
 
             case Enums.Tools.Steps:
                 return step;
+
+            case Enums.Tools.Text:
+                return textComp;
             }
         }
         // qmlformat on
@@ -293,8 +298,8 @@ Item {
         Rectangle {
             readonly property rect boundingRect: Qt.rect(x, y, width, height)
 
-            x: root.annotation.x - width / 2
-            y: root.annotation.y - height / 2
+            x: root.annotation.startX - width / 2
+            y: root.annotation.startY - height / 2
             width: 8 * root.annotation.thickness
             height: 8 * root.annotation.thickness
 
@@ -310,6 +315,54 @@ Item {
                 font.features: {
                     "tnum": 1
                 }
+            }
+        }
+    }
+
+    Component {
+        id: textComp
+        StyledTextArea {
+            id: textarea
+            readonly property rect boundingRect: Qt.rect(x, y, width, height)
+
+            x: root.annotation.startX
+            y: root.annotation.startY - implicitHeight / 2
+
+            enabled: root.annotation.state != Enums.States.NotCreated && Globals.selectedTool == Enums.Tools.Text
+            text: root.annotation.text
+            color: root.annotation.color
+            font.pointSize: 3 * root.annotation.thickness
+            Component.onCompleted: {
+                if (root.isTempObj) {
+                    forceActiveFocus();
+                }
+            }
+
+            Connections {
+                target: root.canvas
+                function onRequestCommitingTemp() {
+                    textarea.editingFinished();
+                }
+            }
+            onEditingFinished: {
+                if (root.isTempObj && text == "") {
+                    // console.log("hi");
+                    canvas.temp = ({});
+                    return;
+                }
+                if (!_modified) {
+                    return;
+                }
+                if (!root.isTempObj) {
+                    if (root.annotation.text.length == text.length) {
+                        if (root.annotation.text == text)
+                            return;
+                    }
+                    root.canvas.temp = root.annotation;
+                    root.canvas.temp.original = false;
+                }
+                root.canvas.temp.text = text;
+                root.canvas.commitTemp();
             }
         }
     }
