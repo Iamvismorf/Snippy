@@ -28,4 +28,9 @@ Singleton {
         Pixelate,
         Text
     }
+    enum States {
+        NotCreated,
+        Creating,
+        Created
+    }
 }
