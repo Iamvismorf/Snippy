@@ -272,8 +272,6 @@ PanelWindow {
     SelectionRectangle {
         id: selectionRectangle
 
-        readonly property bool locked: Globals.selectedTool != Enums.Tools.None
-
         // this is messed up
         SingleTapHandler {
             enabled: !selectionRectangle.locked

@@ -5,7 +5,7 @@ Rectangle {
     id: root
 
     readonly property int _resizeZoneWidth: 12
-    /* readonly property bool locked */ // instantiated outside yuck
+    readonly property bool locked: Globals.selectedTool != Enums.Tools.None
 
     property real startX
     property real startY
@@ -127,6 +127,7 @@ Rectangle {
             }
 
             HoverHandler {
+                enabled: !root.active
                 cursorShape: root.locked ? Qt.ForbiddenCursor : modelData.cursor
             }
 
