@@ -309,6 +309,25 @@ Rectangle {
                 }
             }
         }
+        RowGroup {
+            spacing: 6
+            StyledText {
+                text: Globals.cstep + 1
+                color: Config.accent
+                font.features: {
+                    "tnum": 1
+                }
+            }
+            StyledText {
+                text: "of"
+            }
+            StyledText {
+                text: Globals.history.length
+                font.features: {
+                    "tnum": 1
+                }
+            }
+        }
         Seperator {}
 
         RowGroup {
