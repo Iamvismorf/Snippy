@@ -4,7 +4,7 @@
 #include <QQuickPaintedItem>
 #include <QSvgRenderer>
 
-class SvgIcon : public QQuickPaintedItem {
+class SvgIcon : public QQuickItem {
   Q_OBJECT
   QML_ELEMENT
 
@@ -39,18 +39,18 @@ signals:
   void colorChanged();
 
 private:
-  void paint(QPainter *painter) override;
   void geometryChange(const QRectF &newGeometry,
                       const QRectF &oldGeometry) override;
 
   QSvgRenderer m_svgRenderer;
   void itemChange(QQuickItem::ItemChange change,
                   const QQuickItem::ItemChangeData &value) override;
+  QSGNode *updatePaintNode(QSGNode *node, UpdatePaintNodeData *) override;
 
   void updatePolish() override;
   QUrl m_source;
   QColor m_color;
-  QPixmap m_cachedPixmap;
+  QImage m_cachedImage;
   qreal m_devicePixelRatio = 1.0;
 
   void rerender();

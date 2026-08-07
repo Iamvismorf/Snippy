@@ -2,13 +2,15 @@
 
 #include <QPainter>
 #include <QQuickWindow>
+#include <QSGImageNode>
 
 SvgIcon::SvgIcon(QQuickItem *parent)
-    : QQuickPaintedItem(parent)
+    : QQuickItem(parent)
 
 {
   setImplicitSize(32, 32);
   m_svgRenderer.setAspectRatioMode(Qt::KeepAspectRatio);
+  setFlag(QQuickItem::ItemHasContents);
 
   connect(this, &SvgIcon::sourceChanged, this, [this]() {
     m_svgRenderer.load(m_source.path());
@@ -18,19 +20,30 @@ SvgIcon::SvgIcon(QQuickItem *parent)
   connect(this, &SvgIcon::colorChanged, this, [this]() { polish(); });
 }
 
-void SvgIcon::paint(QPainter *painter) {
-  if (m_cachedPixmap.isNull()) {
-    return;
+QSGNode *SvgIcon::updatePaintNode(QSGNode *oldnode, UpdatePaintNodeData *) {
+  QSGImageNode *node = static_cast<QSGImageNode *>(oldnode);
+  if (!node) {
+    node = window()->createImageNode();
   }
-  painter->drawPixmap(
-      QPointF(qRound(width() / 2.0f - m_cachedPixmap.width() / 2.0f),
-              qRound(height() / 2.0f - m_cachedPixmap.height() / 2.0f)),
-      m_cachedPixmap);
+  QSGTexture *texture = window()->createTextureFromImage(
+      m_cachedImage, QQuickWindow::TextureCanUseAtlas);
+  node->setOwnsTexture(true);
+  node->setTexture(texture);
+  QPointF position(
+
+      ((width() - m_cachedImage.width()) / 2.0f),
+      ((height() - m_cachedImage.height()) / 2.0f)
+
+  );
+
+  node->setRect(QRectF(position, node->texture()->textureSize()));
+
+  return node;
 }
 
 void SvgIcon::geometryChange(const QRectF &newGeometry,
                              const QRectF &oldGeometry) {
-  QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
+  QQuickItem::geometryChange(newGeometry, oldGeometry);
 
   if (newGeometry.size() == oldGeometry.size()) {
     return;
@@ -48,19 +61,25 @@ void SvgIcon::rerender() {
     return;
   }
 
-  qreal side = qMin(width(), height()) * m_devicePixelRatio;
+  qreal roundedWidth = std::min(width(), height());
+  roundedWidth =
+      std::round(roundedWidth * m_devicePixelRatio) / m_devicePixelRatio;
 
-  m_cachedPixmap = QPixmap(side, side);
-  m_cachedPixmap.setDevicePixelRatio(m_devicePixelRatio);
-  m_cachedPixmap.fill(Qt::transparent);
+  m_cachedImage = QImage(roundedWidth, roundedWidth, QImage::Format_ARGB32);
+  m_cachedImage.setDevicePixelRatio(m_devicePixelRatio);
+  m_cachedImage.fill(Qt::transparent);
 
-  QPainter svgpainter(&m_cachedPixmap);
+  QPainter svgpainter(&m_cachedImage);
+  svgpainter.setRenderHints(QPainter::RenderHint::Antialiasing |
+                            QPainter::RenderHint::SmoothPixmapTransform);
   m_svgRenderer.render(&svgpainter);
   svgpainter.end();
 
-  QPainter colorPainter(&m_cachedPixmap);
+  QPainter colorPainter(&m_cachedImage);
   colorPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-  colorPainter.fillRect(m_cachedPixmap.rect(), m_color);
+  colorPainter.setRenderHints(QPainter::RenderHint::Antialiasing |
+                              QPainter::RenderHint::SmoothPixmapTransform);
+  colorPainter.fillRect(m_cachedImage.rect(), m_color);
 
   update();
 }
