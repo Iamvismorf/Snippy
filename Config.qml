@@ -15,7 +15,8 @@ Singleton {
     readonly property int minSelectionWidth: 20
     readonly property int minSelectionHeight: 20
 
-    readonly property string saveFolder: "~/Screenshots"
+    // will create ~/Screenshots/
+    readonly property string saveFolder: "Screenshots"
     readonly property int _popupPadding: 6
     readonly property int horizontalPading: _popupPadding * 6 // right + left
     readonly property int verticalPadding: _popupPadding * 2 // top + bottom

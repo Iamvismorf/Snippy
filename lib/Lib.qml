@@ -1,5 +1,6 @@
 pragma Singleton
 import Quickshell
+import "../"
 
 Singleton {
     function clamp(val, min, max) {
@@ -11,6 +12,10 @@ Singleton {
             return false;
         }
         return true;
+    }
+
+    function getSaveFolder() {
+        return Quickshell.env("HOME") + "/" + Config.saveFolder;
     }
 
     // https://stackoverflow.com/a/3943023/32940244
