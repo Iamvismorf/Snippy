@@ -5,10 +5,12 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.lib
+
 ShellRoot {
     Process {
         running: true
-        command: ["sh", "-c", `mkdir -p ${Config.saveFolder}`]
+        command: ["sh", "-c", `mkdir -p ${Lib.getSaveFolder()}`]
     }
 
     Variants {

@@ -216,24 +216,10 @@ PanelWindow {
         Keys.onEscapePressed: {
             Qt.quit();
         }
-        // Keys.onReturnPressed: {
-        //     let rx = Math.round(selectionRectangle.x);
-        //     let ry = Math.round(selectionRectangle.y);
-        //     let rw = Math.round(selectionRectangle.width);
-        //     let rh = Math.round(selectionRectangle.height);
-        //
-        //     result.width = rw;
-        //     result.height = rh;
-        //     result.x = rx;
-        //     result.y = ry;
-        //
-        //     content.x = -rx;
-        //     content.y = -ry;
-        //
-        //     result.grabToImage(function (r) {
-        //         r.saveToFile("something.png");
-        //     });
-        // }
+        //todo: requires screencopy
+        Keys.onReturnPressed: {
+            root.save();
+        }
 
         ShortcutInhibitor {
             window: root
@@ -388,11 +374,17 @@ PanelWindow {
                 case Enums.Actions.Redo:
                     canvas.redo();
                     break;
-                case Enums.Actions.Abort:
-                    Qt.quit();
-                    break;
                 case Enums.Actions.Clear:
                     canvas.clearAll();
+                    break;
+                case Enums.Actions.Copy:
+                    //todo
+                    break;
+                case Enums.Actions.Save:
+                    root.save();
+                    break;
+                case Enums.Actions.Abort:
+                    Qt.quit();
                     break;
                 }
             }
@@ -421,5 +413,24 @@ PanelWindow {
         Layout.topMargin: 2
         Layout.bottomMargin: Layout.topMargin
         color: Qt.lighter(Config.black, 4.5)
+    }
+
+    function save() {
+        let rx = Math.round(selectionRectangle.x);
+        let ry = Math.round(selectionRectangle.y);
+        let rw = Math.round(selectionRectangle.width);
+        let rh = Math.round(selectionRectangle.height);
+
+        result.width = rw;
+        result.height = rh;
+        result.x = rx;
+        result.y = ry;
+
+        content.x = -rx;
+        content.y = -ry;
+
+        result.grabToImage(function (r) {
+            let status = r.saveToFile(`${Lib.getSaveFolder()}/snippy-${Qt.formatDateTime(new Date(), "dd-MMM-yyyy_HH:mm:ss")}.png`);
+        });
     }
 }
