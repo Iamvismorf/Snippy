@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import qs.components
-import Snippy as Snippy
 
 import "../"
 
@@ -61,8 +60,7 @@ Item {
             Component.onCompleted: root._selectedColor = itemAt(1)
         }
     }
-    Snippy.SvgIcon {
-        // KirigamiIcon {
+    KirigamiIcon {
         id: arrow
         source: Quickshell.iconPath(Quickshell.shellPath(`assets/triangle.svg`))
 

@@ -13,6 +13,7 @@ in
         pkgs.makeWrapper
         pkgs.qtcreator
         pkgs.cmake
+        pkgs.kdePackages.kirigami
         pkgs.ninja
       ];
 

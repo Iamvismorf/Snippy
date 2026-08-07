@@ -7,7 +7,6 @@ import Quickshell
 import qs.components
 import qs.annotation
 import "../"
-import Snippy as Snippy
 
 Rectangle {
     id: root
@@ -419,8 +418,7 @@ Rectangle {
         implicitWidth: snippyIcon.implicitWidth + innerPadding * 2
         implicitHeight: snippyIcon.implicitHeight + innerPadding * 2
 
-        Snippy.SvgIcon {
-            // KirigamiIcon {
+        KirigamiIcon {
             id: snippyIcon
 
             anchors.centerIn: parent
