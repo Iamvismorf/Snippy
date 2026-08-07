@@ -207,7 +207,6 @@ PanelWindow {
         cursorShape: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select ? Qt.ArrowCursor : Qt.CrossCursor
     }
 
-    //todo: wrap this around components?
     FocusScope {
         width: parent.width
         height: parent.height
@@ -217,183 +216,202 @@ PanelWindow {
         Keys.onEscapePressed: {
             Qt.quit();
         }
-        Keys.onReturnPressed: {
-            // let rx = Math.round(selectionRectangle.x);
-            // let ry = Math.round(selectionRectangle.y);
-            // let rw = Math.round(selectionRectangle.width);
-            // let rh = Math.round(selectionRectangle.height);
-            //
-            // result.width = rw;
-            // result.height = rh;
-            // result.x = rx;
-            // result.y = ry;
-            //
-            // content.x = -rx;
-            // content.y = -ry;
-            //
-            // result.grabToImage(function (r) {
-            //     r.saveToFile("something.png");
-            // });
-        }
+        // Keys.onReturnPressed: {
+        //     let rx = Math.round(selectionRectangle.x);
+        //     let ry = Math.round(selectionRectangle.y);
+        //     let rw = Math.round(selectionRectangle.width);
+        //     let rh = Math.round(selectionRectangle.height);
+        //
+        //     result.width = rw;
+        //     result.height = rh;
+        //     result.x = rx;
+        //     result.y = ry;
+        //
+        //     content.x = -rx;
+        //     content.y = -ry;
+        //
+        //     result.grabToImage(function (r) {
+        //         r.saveToFile("something.png");
+        //     });
+        // }
 
         ShortcutInhibitor {
             window: root
             enabled: true
         }
-    }
-    Item {
-        id: result
-
-        width: root.width
-        height: root.height
-        clip: true
-
         Item {
-            id: content
+            id: result
+
             width: root.width
             height: root.height
+            clip: true
 
-            ScreencopyView {
-                id: screenCopy
+            Item {
+                id: content
+                width: root.width
+                height: root.height
 
-                // paintCursor: true
-                // captureSource: modelData
-                // anchors.fill: parent
-            }
-            AnnotationCanvas {
-                id: canvas
-                anchors.fill: parent
+                ScreencopyView {
+                    id: screenCopy
 
-                backdrop: screenCopy
-            }
-        }
-    }
+                    // paintCursor: true
+                    // captureSource: modelData
+                    // anchors.fill: parent
+                }
+                AnnotationCanvas {
+                    id: canvas
+                    anchors.fill: parent
 
-    SelectionRectangle {
-        id: selectionRectangle
-
-        // this is messed up
-        SingleTapHandler {
-            enabled: !selectionRectangle.locked
-            gesturePolicy: TapHandler.WithinBounds
-        }
-        DragHandler {
-            id: selectionRectangleDragHandler
-            enabled: !selectionRectangle.locked
-
-            cursorShape: Qt.DragMoveCursor
-
-            xAxis {
-                minimum: 0
-                maximum: root.width - selectionRectangle.width
-            }
-            yAxis {
-                minimum: 0
-                maximum: root.height - selectionRectangle.height
-            }
-            onGrabChanged: t => {
-                if (t == PointerDevice.GrabPassive) {
-                    selectionRectangle.active = true;
-                } else if (t == PointerDevice.UngrabPassive) {
-                    selectionRectangle.active = false;
+                    backdrop: screenCopy
                 }
             }
         }
-    }
-    Item {
-        anchors.fill: parent
-        layer.enabled: true
-        opacity: 0.6
 
-        Dim {
-            //top
-            width: parent.width
-            height: selectionRectangle.y
-        }
-        Dim {
-            // left
-            width: selectionRectangle.x
-            height: parent.height
-        }
-        Dim {
-            // down
-            width: parent.width
-            height: parent.height - (selectionRectangle.state == "notCreated" ? 0 : (selectionRectangle.y + selectionRectangle.height))
+        SelectionRectangle {
+            id: selectionRectangle
 
-            y: selectionRectangle.y + (selectionRectangle.state == "notCreated" ? 0 : selectionRectangle.height)
-        }
-        Dim {
-            //right
-            width: parent.width - (selectionRectangle.state == "notCreated" ? 0 : (selectionRectangle.x + selectionRectangle.width))
-            height: parent.height
+            // this is messed up
+            SingleTapHandler {
+                enabled: !selectionRectangle.locked
+                gesturePolicy: TapHandler.WithinBounds
+            }
+            DragHandler {
+                id: selectionRectangleDragHandler
+                enabled: !selectionRectangle.locked
 
-            x: selectionRectangle.x + (selectionRectangle.state == "notCreated" ? 0 : selectionRectangle.width)
-        }
-    }
+                cursorShape: Qt.DragMoveCursor
 
-    DimensionBadge {
-        selectionRectangle: selectionRectangle
-
-        anchors.horizontalCenter: selectionRectangle.horizontalCenter
-        anchors.bottom: selectionRectangle.top
-        anchors.bottomMargin: 8
-    }
-    Toolbar {
-        id: toolbar
-        selectionRectangle: selectionRectangle
-        // PersistentProperties {
-        //     id: persist
-        //     reloadableId: "persistedStates"
-        //
-        //     property real x: selectionRectangle.width + selectionRectangle.x
-        //     property real y: selectionRectangle.height + selectionRectangle.y
-        // }
-        // x: persist.x
-        // y: persist.y
-        // opacity: 1
-        //---end debug
-
-        // readonly property int _margin: 16
-        // x: {
-        //     let pos = selectionRectangle.x + (selectionRectangle.width - width) / 2;
-        //     return pos + width > root.modelData.width - _margin / 2 ? root.modelData.width - width - _margin / 2 : pos < root.modelData.x + _margin / 2 ? root.modelData.x + _margin / 2 : pos;
-        // }
-        // y: {
-        //     if (opacity != 0) {
-        //         return y;
-        //     }
-        //     let posWithoutMargin = selectionRectangle.y + selectionRectangle.height;
-        //     return posWithoutMargin + height + _margin > root.modelData.height ? posWithoutMargin - height - _margin : posWithoutMargin + _margin;
-        // }
-
-        //---start debug
-        anchors.top: selectionRectangle.bottom
-        anchors.horizontalCenter: selectionRectangle.horizontalCenter
-        anchors.topMargin: 24
-
-        // x: 233.67578125
-        // y: 863.484375
-        // opacity: 1
-        // anchors.bottom: parent.bottom
-        // anchors.horizontalCenter: parent.horizontalCenter
-        // anchors.bottomMargin: 90
-
-        onAction: action => {
-            switch (action) {
-            case Enums.Actions.Undo:
-                canvas.undo();
-                break;
-            case Enums.Actions.Redo:
-                canvas.redo();
-                break;
-            case Enums.Actions.Abort:
-                Qt.quit();
-                break;
-            case Enums.Actions.Clear:
-                canvas.clearAll();
-                break;
+                xAxis {
+                    minimum: 0
+                    maximum: root.width - selectionRectangle.width
+                }
+                yAxis {
+                    minimum: 0
+                    maximum: root.height - selectionRectangle.height
+                }
+                onGrabChanged: t => {
+                    if (t == PointerDevice.GrabPassive) {
+                        selectionRectangle.active = true;
+                    } else if (t == PointerDevice.UngrabPassive) {
+                        selectionRectangle.active = false;
+                    }
+                }
             }
         }
+        Item {
+            anchors.fill: parent
+            layer.enabled: true
+            opacity: 0.6
+
+            Dim {
+                //top
+                width: parent.width
+                height: selectionRectangle.y
+            }
+            Dim {
+                // left
+                width: selectionRectangle.x
+                height: parent.height
+            }
+            Dim {
+                // down
+                width: parent.width
+                height: parent.height - (selectionRectangle.state == "notCreated" ? 0 : (selectionRectangle.y + selectionRectangle.height))
+
+                y: selectionRectangle.y + (selectionRectangle.state == "notCreated" ? 0 : selectionRectangle.height)
+            }
+            Dim {
+                //right
+                width: parent.width - (selectionRectangle.state == "notCreated" ? 0 : (selectionRectangle.x + selectionRectangle.width))
+                height: parent.height
+
+                x: selectionRectangle.x + (selectionRectangle.state == "notCreated" ? 0 : selectionRectangle.width)
+            }
+        }
+
+        DimensionBadge {
+            selectionRectangle: selectionRectangle
+
+            anchors.horizontalCenter: selectionRectangle.horizontalCenter
+            anchors.bottom: selectionRectangle.top
+            anchors.bottomMargin: 8
+        }
+        Toolbar {
+            id: toolbar
+            selectionRectangle: selectionRectangle
+            // PersistentProperties {
+            //     id: persist
+            //     reloadableId: "persistedStates"
+            //
+            //     property real x: selectionRectangle.width + selectionRectangle.x
+            //     property real y: selectionRectangle.height + selectionRectangle.y
+            // }
+            // x: persist.x
+            // y: persist.y
+            // opacity: 1
+            //---end debug
+
+            // readonly property int _margin: 16
+            // x: {
+            //     let pos = selectionRectangle.x + (selectionRectangle.width - width) / 2;
+            //     return pos + width > root.modelData.width - _margin / 2 ? root.modelData.width - width - _margin / 2 : pos < root.modelData.x + _margin / 2 ? root.modelData.x + _margin / 2 : pos;
+            // }
+            // y: {
+            //     if (opacity != 0) {
+            //         return y;
+            //     }
+            //     let posWithoutMargin = selectionRectangle.y + selectionRectangle.height;
+            //     return posWithoutMargin + height + _margin > root.modelData.height ? posWithoutMargin - height - _margin : posWithoutMargin + _margin;
+            // }
+
+            //---start debug
+            anchors.top: selectionRectangle.bottom
+            anchors.horizontalCenter: selectionRectangle.horizontalCenter
+            anchors.topMargin: 24
+
+            //---end
+            // x: 233.67578125
+            // y: 863.484375
+            // opacity: 1
+            //---start
+
+            // opacity: 1
+            // anchors.bottom: parent.bottom
+            // anchors.horizontalCenter: parent.horizontalCenter
+            // anchors.bottomMargin: 93.55
+
+            onAction: action => {
+                switch (action) {
+                case Enums.Actions.Undo:
+                    canvas.undo();
+                    break;
+                case Enums.Actions.Redo:
+                    canvas.redo();
+                    break;
+                case Enums.Actions.Abort:
+                    Qt.quit();
+                    break;
+                case Enums.Actions.Clear:
+                    canvas.clearAll();
+                    break;
+                }
+            }
+        }
+
+        // Timer {
+        //     interval: 120
+        //     repeat: true
+        //     running: !screenCopy.hasContent
+        //     property int tries: 0
+        //     onTriggered: {
+        //         if (screenCopy.hasContent || tries > 10) {
+        //             running = false;
+        //             return;
+        //         }
+        //         screenCopy.captureFrame();
+        //         tries += 1;
+        //     }
+        // }
     }
 
     component Seperator: Rectangle {
@@ -404,19 +422,4 @@ PanelWindow {
         Layout.bottomMargin: Layout.topMargin
         color: Qt.lighter(Config.black, 4.5)
     }
-
-    // Timer {
-    //     interval: 120
-    //     repeat: true
-    //     running: !screenCopy.hasContent
-    //     property int tries: 0
-    //     onTriggered: {
-    //         if (screenCopy.hasContent || tries > 10) {
-    //             running = false;
-    //             return;
-    //         }
-    //         screenCopy.captureFrame();
-    //         tries += 1;
-    //     }
-    // }
 }
