@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import qs.components
-import Snippy as Snippy
 
 import "../"
 

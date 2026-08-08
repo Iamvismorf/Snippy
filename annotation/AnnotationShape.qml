@@ -7,6 +7,8 @@ import "../"
 
 Item {
     id: root
+    readonly property bool _selected: Globals.selectedChildId == annotation.id
+
     property var annotation
     property Item canvas
     property bool isTempObj: false
@@ -18,6 +20,20 @@ Item {
 
     implicitWidth: ldr.item?.boundingRect?.width ?? 0
     implicitHeight: ldr.item?.boundingRect?.height ?? 0
+
+    Keys.enabled: root.focus
+    Keys.onEscapePressed: {
+        Globals.selectedChild = null;
+        Globals.selectedChildId = -1;
+    }
+
+    on_SelectedChanged: {
+        if (_selected) {
+            root.forceActiveFocus();
+        } else {
+            root.focus = false;
+        }
+    }
 
     RectangleShape {
         readonly property int _padding: 6
@@ -33,7 +49,7 @@ Item {
         dashPattern: [6, 8]
         radius: 0
         strokeColor: {
-            if (ldr.item?.activeFocus || hoverHandler.hovered && Globals.selectedTool == Enums.Tools.Erase || Globals.selectedChildId == root.annotation.id) {
+            if (ldr.item?.activeFocus || hoverHandler.hovered && Globals.selectedTool == Enums.Tools.Erase || root._selected) {
                 return Config.accent;
             } else if (hoverHandler.hovered && (Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Text)) {
                 return Config.gray;

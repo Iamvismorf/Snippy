@@ -111,6 +111,7 @@ PanelWindow {
                 }
             } else {
                 let child = canvas.childAt(point.pressPosition.x, point.pressPosition.y);
+
                 if (Globals.selectedTool == Enums.Tools.Erase) {
                     if (child) {
                         canvas.pushToHistory({
@@ -147,7 +148,6 @@ PanelWindow {
                         canvas.temp.state = Enums.States.Created;
                         canvas.requestCommitingTemp();
                     }
-                    // console.log("ok");
                     canvas.temp = {
                         id: canvas.tempId,
                         type: Enums.Tools.Text,
