@@ -8,6 +8,7 @@ import qs.components
 import qs.toolbar
 import qs.annotation
 import qs.lib
+import Snippy as Snippy
 
 PanelWindow {
     id: root
@@ -240,9 +241,9 @@ PanelWindow {
                 ScreencopyView {
                     id: screenCopy
 
-                    // paintCursor: true
-                    // captureSource: modelData
-                    // anchors.fill: parent
+                    paintCursor: true
+                    captureSource: modelData
+                    anchors.fill: parent
                 }
                 AnnotationCanvas {
                     id: canvas
@@ -378,7 +379,9 @@ PanelWindow {
                     canvas.clearAll();
                     break;
                 case Enums.Actions.Copy:
-                    //todo
+                    //todo connect to snippy.clipboard and handle failed cases
+                    prepareOutImage();
+                    Snippy.Clipboard.requestCopyImage(result);
                     break;
                 case Enums.Actions.Save:
                     root.save();
@@ -415,7 +418,7 @@ PanelWindow {
         color: Qt.lighter(Config.black, 4.5)
     }
 
-    function save() {
+    function prepareOutImage() {
         let rx = Math.round(selectionRectangle.x);
         let ry = Math.round(selectionRectangle.y);
         let rw = Math.round(selectionRectangle.width);
@@ -428,9 +431,12 @@ PanelWindow {
 
         content.x = -rx;
         content.y = -ry;
-
+    }
+    function save() {
+        prepareOutImage();
         result.grabToImage(function (r) {
             let status = r.saveToFile(`${Lib.getSaveFolder()}/snippy-${Qt.formatDateTime(new Date(), "dd-MMM-yyyy_HH:mm:ss")}.png`);
+        //todo: emit message if error
         });
     }
 }

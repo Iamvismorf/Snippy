@@ -4,5 +4,4 @@ build/
 .cache/
 
 .qmlls.ini
-*.png
 todo.txt
