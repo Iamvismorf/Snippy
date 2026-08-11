@@ -33,7 +33,6 @@ Rectangle {
         StyledText {
             id: dimensionText
 
-            font.pixelSize: 15
             color: Config.black
             text: Math.round(root.selectionRectangle.width) + " × " + Math.round(root.selectionRectangle.height)
         }

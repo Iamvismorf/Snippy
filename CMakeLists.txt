@@ -3,6 +3,7 @@ project(snippy LANGUAGES CXX)
 
 find_package(Qt6 REQUIRED COMPONENTS
    Core
+   DBus
    Qml
    Quick
    Svg

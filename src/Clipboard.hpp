@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QQuickItem>
 #include <QQuickItemGrabResult>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 class Clipboard : public QObject {
   Q_OBJECT
@@ -16,7 +16,7 @@ public:
   Q_INVOKABLE void requestCopyImage(QQuickItem *item);
 
 signals:
-  void copied(bool status);
+  void copied(QQuickItemGrabResult *grabedImage);
 
 private:
   QClipboard *m_clipboard;

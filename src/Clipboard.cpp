@@ -14,8 +14,8 @@ void Clipboard::requestCopyImage(QQuickItem *item) {
 void Clipboard::copyImage() {
   if (m_grabedImage.data()) {
     m_clipboard->setImage(m_grabedImage->image());
-    emit copied(true);
+    emit copied(m_grabedImage.data());
   } else {
-    emit copied(false);
+    emit copied(nullptr);
   }
 }

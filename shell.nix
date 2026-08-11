@@ -6,7 +6,6 @@ in
       [
         qtbase
         qtdeclarative
-        # full
       ]
       ++ [
         pkgs.qt6.wrapQtAppsHook
@@ -15,6 +14,7 @@ in
         pkgs.qtcreator
         pkgs.cmake
         pkgs.kdePackages.kirigami
+        pkgs.kdePackages.qttools
         pkgs.ninja
       ];
 

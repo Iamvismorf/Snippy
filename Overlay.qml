@@ -8,6 +8,7 @@ import qs.components
 import qs.toolbar
 import qs.annotation
 import qs.lib
+
 import Snippy as Snippy
 
 PanelWindow {
@@ -29,7 +30,7 @@ PanelWindow {
     color: "transparent"
 
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    // WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
 
     SingleTapHandler {
@@ -217,7 +218,6 @@ PanelWindow {
         Keys.onEscapePressed: {
             Qt.quit();
         }
-        //todo: requires screencopy
         Keys.onReturnPressed: {
             root.save();
         }
@@ -379,9 +379,12 @@ PanelWindow {
                     canvas.clearAll();
                     break;
                 case Enums.Actions.Copy:
-                    //todo connect to snippy.clipboard and handle failed cases
                     prepareOutImage();
                     Snippy.Clipboard.requestCopyImage(result);
+                    Snippy.Clipboard.copied.connect(function (grabedImage) {
+                        Snippy.Notifier.notify("Rectangular Region", grabedImage);
+                        Qt.quit();
+                    });
                     break;
                 case Enums.Actions.Save:
                     root.save();
@@ -435,8 +438,12 @@ PanelWindow {
     function save() {
         prepareOutImage();
         result.grabToImage(function (r) {
-            let status = r.saveToFile(`${Lib.getSaveFolder()}/snippy-${Qt.formatDateTime(new Date(), "dd-MMM-yyyy_HH:mm:ss")}.png`);
-        //todo: emit message if error
+            let savePath = `${Lib.getSaveFolder()}/snippy-${Qt.formatDateTime(new Date(), "dd-MMM-yyyy_HH:mm:ss")}.png`;
+            let status = r.saveToFile(savePath);
+            if (!status) {
+                //todo: emit message if error
+            }
+            Qt.quit();
         });
     }
 }
