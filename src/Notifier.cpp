@@ -25,34 +25,39 @@ void Notifier::notify(const QString &summary,
 
     hints["image-data"] = QVariant::fromValue(imageData);
 
-    // clang-format off
-    notifInterface.call(
-        "Notify",
+    notifInterface.call("Notify",
 
-        "Snippy", 
-        (uint32_t)0, 
-        "", 
-        summary,
-        "The screenshot was opied to clipboard",
-        QStringList(),
-        hints,
-        (int32_t)-1
-    );
-    } // clang-format on
-  else {
-    // clang-format off
-    notifInterface.call(
-        "Notify",
+                        "Snippy", (uint32_t)0, "", summary,
+                        "The screenshot was copied to clipboard", QStringList(),
+                        hints, (int32_t)-1);
+  } else {
+    notifInterface.call("Notify",
 
-        "Snippy", 
-        (uint32_t)0, 
-        "", 
-        summary,
-        "Failed to copy the screenshot to clipboard",
-        QStringList(),
-        hints,
-        (int32_t)-1
-    );
-    // clang-format on
+                        "Snippy", (uint32_t)0, "", summary,
+                        "Failed to copy the screenshot to clipboard",
+                        QStringList(), hints, (int32_t)-1);
+  }
+}
+
+void Notifier::notify(bool status, const QString &summary, const QUrl &url) {
+  QDBusInterface notifInterface("org.freedesktop.Notifications",
+                                "/org/freedesktop/Notifications",
+                                "org.freedesktop.Notifications");
+  QVariantHash hints;
+  if (status) {
+    hints["image-path"] = url.path();
+    notifInterface.call("Notify",
+
+                        "Snippy", (uint32_t)0, "", summary,
+                        QString("The screenshot was saved as '%1' to '%2'")
+                            .arg(url.fileName(), url.path()),
+                        QStringList(), hints, (int32_t)-1);
+
+  } else {
+    notifInterface.call("Notify",
+
+                        "Snippy", (uint32_t)0, "", summary,
+                        "Failed to save the screenshot", QStringList(), hints,
+                        (int32_t)-1);
   }
 }

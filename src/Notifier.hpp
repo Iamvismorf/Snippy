@@ -12,4 +12,5 @@ public:
   explicit Notifier(QObject *parent = nullptr);
   Q_INVOKABLE void notify(const QString &summary,
                           const QQuickItemGrabResult *grabedImage);
+  Q_INVOKABLE void notify(bool status, const QString &summary, const QUrl &url);
 };

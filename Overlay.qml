@@ -440,9 +440,7 @@ PanelWindow {
         result.grabToImage(function (r) {
             let savePath = `${Lib.getSaveFolder()}/snippy-${Qt.formatDateTime(new Date(), "dd-MMM-yyyy_HH:mm:ss")}.png`;
             let status = r.saveToFile(savePath);
-            if (!status) {
-                //todo: emit message if error
-            }
+            Snippy.Notifier.notify(true, "Rectangle Region", savePath);
             Qt.quit();
         });
     }
