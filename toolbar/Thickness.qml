@@ -1,73 +1,126 @@
+//todo: reload anim
 import QtQuick
 import Quickshell
 import qs.components
+import Qt.labs.synchronizer
 
 import "../"
 
-Item {
-    id: wrapper
+RowGroup {
+    spacing: 16
+    Item {
+        id: wrapper
 
-    implicitWidth: root.implicitWidth
-    implicitHeight: root.implicitHeight + arrow.implicitHeight
-    RowGroup {
-        id: root
+        implicitWidth: root.implicitWidth
+        implicitHeight: root.implicitHeight + arrow.implicitHeight
+        RowGroup {
+            id: root
+            spacing: 8
 
-        property Item _selectedThickness
-        anchors.verticalCenter: parent.verticalCenter
-        on_SelectedThicknessChanged: Globals.selectedThickness = _selectedThickness.modelData
-
-        Repeater {
-            id: rep
-            model: [Config.normalThickness, Config.mediumThickness, Config.largeThickness]
-
-            StyledRectangle {
-                required property int modelData
-                required property int index
-
-                width: Config.toolbarIconSize
-                height: width
-
-                animatedColor: true
-                color: mouseArea.containsMouse ? Config.lightGray : Qt.rgba(1, 1, 1, 0)
-                radius: 4
-
-                StyledRectangle {
-                    width: Math.min(Config.toolbarIconSize, modelData / rep.model[rep.model.length - 1] * 16)
-                    height: width
-                    anchors.centerIn: parent
-
-                    animatedColor: true
-                    radius: 100
-                    color: root._selectedThickness == parent ? Config.accent : Config.black
-                }
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-
-                    onClicked: root._selectedThickness = parent
+            property Item _selectedThickness
+            anchors.verticalCenter: parent.verticalCenter
+            on_SelectedThicknessChanged: Globals.selectedThickness = _selectedThickness._copiedModelData
+            Connections {
+                target: root._selectedThickness
+                function on_CopiedModelDataChanged() {
+                    Globals.selectedThickness = root._selectedThickness._copiedModelData;
                 }
             }
-            //todo: add spinbox for custom
-            Component.onCompleted: root._selectedThickness = itemAt(0)
+
+            Repeater {
+                id: rep
+                model: [Config.normalThickness, Config.mediumThickness, Config.largeThickness]
+
+                StyledRectangle {
+                    required property int modelData
+                    required property int index
+
+                    property int _copiedModelData: modelData
+
+                    width: Config.toolbarIconSize
+                    height: width
+
+                    animatedColor: true
+                    color: mouseArea.containsMouse ? Config.lightGray : Qt.rgba(1, 1, 1, 0)
+                    radius: 4
+
+                    StyledRectangle {
+                        animatedSize: true
+                        //todo: this is dumb
+                        width: Math.min(Config.toolbarIconSize, _copiedModelData / rep.model[rep.model.length - 1] * 16)
+                        height: width
+                        anchors.centerIn: parent
+
+                        animatedColor: true
+                        radius: 100
+                        color: root._selectedThickness == parent ? Config.accent : Config.black
+                    }
+                    StyledMouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        onClicked: root._selectedThickness = parent
+                    }
+                }
+                Component.onCompleted: root._selectedThickness = itemAt(1)
+            }
+        }
+
+        KirigamiIcon {
+            id: arrow
+            source: Quickshell.iconPath(Quickshell.shellPath(`assets/triangle.svg`))
+
+            x: root._selectedThickness?.mapToItem(wrapper, 0, 0).x + (root._selectedThickness?.width - implicitWidth) / 2
+            y: root.y - implicitHeight
+
+            implicitWidth: 10
+            implicitHeight: implicitWidth
+            color: Config.accent
+
+            Behavior on x {
+                DeccelAnim {}
+            }
         }
     }
-
     KirigamiIcon {
-        id: arrow
-        source: Quickshell.iconPath(Quickshell.shellPath(`assets/triangle.svg`))
-
-        x: root._selectedThickness?.mapToItem(wrapper, 0, 0).x + (root._selectedThickness?.width - implicitWidth) / 2
-        y: root.y - implicitHeight
-
-        implicitWidth: 10
-        implicitHeight: implicitWidth
+        id: reloadIcon
+        source: Quickshell.iconPath(Quickshell.shellPath(`assets/reloadv2.svg`))
+        size: Config.toolbarIconSize * 0.75
         color: Config.accent
 
-        Behavior on x {
-            DeccelAnim {}
+        StyledMouseArea {
+            id: reloadMouseArea
+            anchors.fill: parent
+            onClicked: {
+                reloadAnim.running = true;
+                root._selectedThickness._copiedModelData = root._selectedThickness.modelData;
+            }
+        }
+        //todo
+        NumberAnimation {
+            id: reloadAnim
+
+            target: reloadIcon
+            property: "rotation"
+            alwaysRunToEnd: true
+            to: 360
+            duration: 300
+
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: [0.61, 1, 0.88, 1, 1, 1]
+
+            onFinished: reloadIcon.rotation = 0
+        }
+    }
+    CustomSpinBox {
+        id: spinbox
+
+        from: Config.normalThickness
+        to: Config.largeThickness
+        value: root._selectedThickness._copiedModelData
+        onValueChanged: {
+            if (root._selectedThickness) {
+                root._selectedThickness._copiedModelData = value;
+            }
         }
     }
 }
