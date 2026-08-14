@@ -18,7 +18,8 @@ in
         pkgs.ninja
       ];
 
-    QT_LOGGING_RULES = "quickshell.dbus.properties=false;kf.kirigami.platform=false;qt.qml.binding.removal.info=true";
+    QT_LOGGING_RULES = "quickshell.dbus.properties=false;kf.kirigami.platform=false";
+    #;qt.qml.binding.removal.info=true";
 
     # Qt 6 specific environment variables
     shellHook = ''

@@ -35,12 +35,8 @@ Item {
                 // border.width: 1
                 border.color: root._selectedColor == this ? Qt.lighter(Config.accent, 1.25) : Qt.darker(modelData, 1.5)
 
-                MouseArea {
+                StyledMouseArea {
                     anchors.fill: parent
-
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-
                     onClicked: root._selectedColor = parent
                 }
 

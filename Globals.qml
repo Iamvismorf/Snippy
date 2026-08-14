@@ -77,4 +77,5 @@ Singleton {
 
     // onHistoryChanged: console.log(JSON.stringify(history, null, " "))
     // onSelectedChildChanged: console.log(selectedChild)
+    // onSelectedThicknessChanged: console.log(selectedThickness)
 }

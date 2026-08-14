@@ -398,18 +398,16 @@ Rectangle {
                 duration: 275
             }
         }
-        MouseArea {
+        StyledMouseArea {
             id: mouseArea
             anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
         }
     }
 
     component Icon: IconBackground {
         id: iconComp
         property alias source: snippyIcon.source
-        property int size: Config.toolbarIconSize
+        property alias size: snippyIcon.size
         property alias iconColor: snippyIcon.color
 
         property alias icon: snippyIcon
@@ -421,8 +419,7 @@ Rectangle {
             id: snippyIcon
 
             anchors.centerIn: parent
-            implicitWidth: iconComp.size
-            implicitHeight: iconComp.size
+            size: Config.toolbarIconSize
             color: Config.black
 
             Behavior on color {
