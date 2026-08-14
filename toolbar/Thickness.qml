@@ -122,5 +122,11 @@ RowGroup {
                 root._selectedThickness._copiedModelData = value;
             }
         }
+        textFromValue: function (v, l) {
+            return Number(v - from + 1).toLocaleString(l, 'f', 0);
+        }
+        valueFromText: function (t, l) {
+            return Number.fromLocaleString(l, t) + from - 1;
+        }
     }
 }

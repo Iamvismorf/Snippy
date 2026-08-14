@@ -39,7 +39,8 @@ Basic.SpinBox {
     }
 
     contentItem: TextInput {
-        text: spinbox.textFromValue(spinbox.value, spinbox.locale)
+        // text: spinbox.textFromValue(spinbox.value, spinbox.locale)
+        text: spinbox.displayText
 
         color: Config.accent
         padding: 4
@@ -51,14 +52,14 @@ Basic.SpinBox {
         readOnly: !spinbox.editable
         validator: spinbox.validator
 
-        function onTextEdited() {
-            let val = parseInt(spinbox.contentItem.text);
-            if (val > spinbox.to || val < spinbox.from) {
-                spinbox.contentItem.text = Qt.binding(function () {
-                    return spinbox.value;
-                });
-            }
-        }
+        // function onTextEdited() {
+        //     let val = parseInt(spinbox.contentItem.text);
+        //     if (val > spinbox.to || val < spinbox.from) {
+        //         spinbox.contentItem.text = Qt.binding(function () {
+        //             return spinbox.value;
+        //         });
+        //     }
+        // }
     }
     background: StyledRectangle {
         implicitWidth: fm.charWidth * Math.max(spinbox.from.toString().length, spinbox.to.toString().length) + 20 + spinbox.down.implicitIndicatorWidth + spinbox.up.implicitIndicatorWidth
