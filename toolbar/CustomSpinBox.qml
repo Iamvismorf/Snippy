@@ -1,38 +1,48 @@
+//todo: fix this: enter `from` value -> esc -> enter value less than `from` -> esc
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls 2.15
+import QtQuick.Controls.Basic as Basic
 import Quickshell
 import qs.components
 import qs.lib
 import "../"
 
-SpinBox {
+Basic.SpinBox {
     id: spinbox
-    readonly property real _fontSize: 12
 
-    implicitWidth: fm.charWidth * Math.max(from.toString().length, to.toString().length)
-
-    editable: true
+    from: 0
+    to: 0
     live: true
-    wrap: true
+    editable: true
     locale: Qt.locale("C")
-    padding: 8
-    valueFromText: function (t, _) {
-        let parsed = parseInt(t);
-        return isNaN(parsed) ? value : parsed;
-    }
     Keys.onEscapePressed: spinbox.focus = false
-    font {
-        styleName: Config.fontFamilyStyle
-        family: Config.fontFamily
-        pointSize: spinbox._fontSize
+
+    down.indicator: StyledRectangle {
+        x: spinbox.mirrored ? parent.width - width : 0
+
+        implicitWidth: spinbox.implicitHeight
+        implicitHeight: implicitWidth
+
+        topLeftRadius: spinbox.background.radius
+        bottomLeftRadius: spinbox.background.radius
+        color: spinbox.down.pressed ? Config.gray : Qt.rgba(1, 1, 1, 0)
+
+        StyledRectangle {
+            readonly property bool _disabled: !spinbox.wrap && spinbox.value == spinbox.from
+            anchors.centerIn: parent
+            width: parent.width - parent.width * 0.6
+            height: 2
+
+            animatedColor: true
+            color: _disabled ? Config.gray : Config.black
+        }
     }
 
     contentItem: TextInput {
         text: spinbox.textFromValue(spinbox.value, spinbox.locale)
 
-        font: spinbox.font
-        color: Config.black
+        color: Config.accent
+        padding: 4
         selectionColor: Config.accent
         selectedTextColor: Lib.isDark(selectionColor) ? Config.white : Config.black
         horizontalAlignment: Qt.AlignHCenter
@@ -40,57 +50,56 @@ SpinBox {
 
         readOnly: !spinbox.editable
         validator: spinbox.validator
-        // anchors.fill: parent
-    }
-    up.onPressedChanged: {
-        if (up.pressed) {
-            increase();
+
+        function onTextEdited() {
+            let val = parseInt(spinbox.contentItem.text);
+            if (val > spinbox.to || val < spinbox.from) {
+                spinbox.contentItem.text = Qt.binding(function () {
+                    return spinbox.value;
+                });
+            }
         }
     }
-    background: Rectangle {
-        color: Config.white
+    background: StyledRectangle {
+        implicitWidth: fm.charWidth * Math.max(spinbox.from.toString().length, spinbox.to.toString().length) + 20 + spinbox.down.implicitIndicatorWidth + spinbox.up.implicitIndicatorWidth
+        color: Config.lightGray
+        radius: 8
     }
 
-    // function increase() {
-    //     if (value + stepSize > to) {
-    //         value = wrap ? from : to;
-    //         valueModified();
-    //     } else {
-    //         value += stepSize;
-    //         valueModified();
-    //     }
-    // }
+    up.indicator: StyledRectangle {
+        readonly property bool _disabled: !spinbox.wrap && spinbox.value == spinbox.to
 
-    // function decrease() {
-    //     if (value - stepSize < from) {
-    //         value = wrap ? to : from;
-    //         valueModified();
-    //     } else {
-    //         value -= stepSize;
-    //         valueModified();
-    //     }
-    // }
+        x: spinbox.mirrored ? 0 : spinbox.width - width
+
+        implicitWidth: spinbox.implicitHeight
+        implicitHeight: implicitWidth
+
+        topRightRadius: spinbox.background.radius
+        bottomRightRadius: spinbox.background.radius
+        color: spinbox.up.pressed ? Config.gray : Qt.rgba(1, 1, 1, 0)
+
+        StyledRectangle {
+            anchors.centerIn: parent
+            width: parent.width - parent.width * 0.6
+            height: 2
+
+            animatedColor: true
+            color: parent._disabled ? Config.gray : Config.black
+        }
+        StyledRectangle {
+            anchors.centerIn: parent
+            width: 2
+            height: parent.width - parent.width * 0.6
+
+            animatedColor: true
+            color: parent._disabled ? Config.gray : Config.black
+        }
+    }
+
     FontMetrics {
         id: fm
         readonly property real charWidth: advanceWidth("W")
-        font: spinbox.contentItem.font
-    }
-    component Btn: Item {
-        implicitWidth: Math.min(spinbox.implicitWidth, spinbox.implicitHeight)
-        implicitHeight: implicitWidth
-        property alias text: displayText.text
-        property alias mouseArea: mouseArea
-        StyledText {
-            id: displayText
-            color: Config.white
-            anchors.centerIn: parent
-            font.pointSize: spinbox._fontSize
-        }
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-        }
+        font.family: Config.fontFamily
+        font.styleName: Config.fontFamilyStyle
     }
 }
