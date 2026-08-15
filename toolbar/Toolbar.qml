@@ -6,7 +6,7 @@ import QtQuick.Layouts
 import Quickshell
 import qs.components
 import qs.annotation
-import "../"
+import qs.singletons
 import "./icon"
 
 Rectangle {

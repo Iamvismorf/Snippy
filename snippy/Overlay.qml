@@ -8,6 +8,7 @@ import qs.components
 import qs.toolbar
 import qs.annotation
 import qs.lib
+import qs.singletons
 
 import Snippy as Snippy
 
@@ -241,9 +242,9 @@ PanelWindow {
                 ScreencopyView {
                     id: screenCopy
 
-                    paintCursor: true
-                    captureSource: modelData
-                    anchors.fill: parent
+                    // paintCursor: true
+                    // captureSource: modelData
+                    // anchors.fill: parent
                 }
                 AnnotationCanvas {
                     id: canvas
@@ -288,6 +289,7 @@ PanelWindow {
         Item {
             anchors.fill: parent
             layer.enabled: true
+            // opacity: 0.1
             opacity: 0.6
 
             Dim {

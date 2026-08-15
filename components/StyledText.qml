@@ -1,5 +1,5 @@
 import QtQuick
-import "../"
+import qs.singletons
 
 Text {
     font.styleName: Config.fontFamilyStyle

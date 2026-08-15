@@ -1,8 +1,7 @@
 import QtQuick
 import Quickshell
 import qs.components
-
-import "../"
+import qs.singletons
 
 Item {
     id: wrapper

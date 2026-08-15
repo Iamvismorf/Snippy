@@ -1,11 +1,9 @@
-//todo: reload anim
 import QtQuick
 import Quickshell
 import qs.components
-import Qt.labs.synchronizer
+import qs.singletons
 
 import "./icon"
-import "../"
 
 RowGroup {
     spacing: 16

@@ -3,7 +3,7 @@ import QtQuick.Shapes
 import QtQuick.Shapes.DesignHelpers
 import qs.lib
 import qs.components
-import "../"
+import qs.singletons
 
 Item {
     id: root

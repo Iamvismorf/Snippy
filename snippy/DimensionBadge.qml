@@ -1,5 +1,6 @@
 import QtQuick
 import qs.components
+import qs.singletons
 
 StyledText {
     id: dimensionText

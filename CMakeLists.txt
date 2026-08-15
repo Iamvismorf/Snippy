@@ -17,5 +17,5 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
 
-add_subdirectory(src)
+add_subdirectory(plugins)
 

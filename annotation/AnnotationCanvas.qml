@@ -5,7 +5,7 @@ import Quickshell
 
 import qs.lib
 import qs.toolbar
-import "../"
+import qs.singletons
 
 Item {
     id: root

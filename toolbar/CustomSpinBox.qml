@@ -1,11 +1,10 @@
-//todo: fix this: enter `from` value -> esc -> enter value less than `from` -> esc
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic as Basic
 import Quickshell
 import qs.components
 import qs.lib
-import "../"
+import qs.singletons
 
 Basic.SpinBox {
     id: spinbox

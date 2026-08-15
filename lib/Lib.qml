@@ -1,6 +1,6 @@
 pragma Singleton
 import Quickshell
-import "../"
+import qs.singletons
 
 Singleton {
     function clamp(val, min, max) {
