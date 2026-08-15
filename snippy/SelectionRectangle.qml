@@ -1,3 +1,4 @@
+//todo: when resizing is in one direction draging in unavailable direction moves the rectangle instead of lock
 import QtQuick
 import qs.components
 import qs.singletons
@@ -7,6 +8,9 @@ Rectangle {
 
     readonly property int _resizeZoneWidth: 12
     readonly property bool locked: Globals.selectedTool != Enums.Tools.None
+
+    property bool resizing: false
+    property var cursor: null
 
     property real startX
     property real startY
@@ -138,11 +142,21 @@ Rectangle {
 
             DragHandler {
                 enabled: !root.locked
+                target: null
 
-                xAxis.enabled: parent.isHorizontal || parent.isCorner
-                yAxis.enabled: parent.isVertical || parent.isCorner
+                onGrabChanged: t => {
+                    if (t == PointerDevice.GrabPassive && !root.resizing) {
+                        root.resizing = true;
+                        root.active = true; // this is needed. Trust
+                        root.cursor = modelData.cursor;
+                    } else if (t == PointerDevice.UngrabPassive) {
+                        root.active = false;
+                        root.resizing = false;
+                        root.cursor = null;
+                    }
+                }
 
-                onTranslationChanged: delta => {
+                onActiveTranslationChanged: delta => {
                     if (!!modelData.left) {
                         root.implicitWidth -= delta.x;
                         root.x += delta.x;
@@ -158,7 +172,6 @@ Rectangle {
                     }
                 }
                 onActiveChanged: {
-                    root.active = active;
                     if (!active) {
                         if (root.implicitWidth < Config.minSelectionWidth || root.implicitHeight < Config.minSelectionHeight) {
                             root.destruct();
@@ -170,7 +183,7 @@ Rectangle {
     }
 
     HoverHandler {
-        enabled: !root.locked && root.state == "created"
+        enabled: !root.locked && root.state == "created" && !root.resizing
         cursorShape: Qt.ArrowCursor
     }
 

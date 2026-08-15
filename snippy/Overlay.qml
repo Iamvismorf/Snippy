@@ -207,7 +207,14 @@ PanelWindow {
 
     HoverHandler {
         id: hoverhandler
-        cursorShape: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select ? Qt.ArrowCursor : Qt.CrossCursor
+        cursorShape: {
+            if (Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select) {
+                return Qt.ArrowCursor;
+            } else if (selectionRectangle.resizing && selectionRectangle.cursor) {
+                return selectionRectangle.cursor;
+            }
+            return Qt.CrossCursor;
+        }
     }
 
     FocusScope {
@@ -258,9 +265,9 @@ PanelWindow {
         SelectionRectangle {
             id: selectionRectangle
 
-            // this is messed up
             SingleTapHandler {
                 enabled: !selectionRectangle.locked
+                cursorShape: Qt.DragMoveCursor
                 gesturePolicy: TapHandler.WithinBounds
             }
             DragHandler {

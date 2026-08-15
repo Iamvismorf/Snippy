@@ -48,7 +48,7 @@ todo
 + [Quickshell](https://github.com/quickshell-mirror/quickshell)
 
 ## Todos
-- [ ] Thickness spinbox
+- [x] Thickness spinbox
 - [ ] Steps editable spinbox
 - [ ] Follow user's qt system theme
 - [ ] Draggable toolbar?
