@@ -4,6 +4,7 @@ import Quickshell
 import qs.components
 import Qt.labs.synchronizer
 
+import "./icon"
 import "../"
 
 RowGroup {
@@ -81,34 +82,30 @@ RowGroup {
             }
         }
     }
-    KirigamiIcon {
-        id: reloadIcon
+    Icon {
+        id: icon
         source: Quickshell.iconPath(Quickshell.shellPath(`assets/reloadv2.svg`))
         size: Config.toolbarIconSize * 0.75
-        color: Config.accent
-
-        StyledMouseArea {
-            id: reloadMouseArea
-            anchors.fill: parent
-            onClicked: {
-                reloadAnim.running = true;
-                root._selectedThickness._copiedModelData = root._selectedThickness.modelData;
-            }
+        icon.color: Config.accent
+        color: mouseArea.containsMouse ? Config.lightGray : Qt.rgba(1, 1, 1, 0)
+        mouseArea.cursorShape: Qt.PointingHandCursor
+        mouseArea.onClicked: {
+            reloadAnim.running = true;
+            root._selectedThickness._copiedModelData = root._selectedThickness.modelData;
         }
-        //todo
         NumberAnimation {
             id: reloadAnim
 
-            target: reloadIcon
+            target: icon.icon
             property: "rotation"
             alwaysRunToEnd: true
             to: 360
-            duration: 300
+            duration: 600
 
             easing.type: Easing.BezierSpline
-            easing.bezierCurve: [0.61, 1, 0.88, 1, 1, 1]
+            easing.bezierCurve: [0.33, 1, 0.68, 1, 1, 1]
 
-            onFinished: reloadIcon.rotation = 0
+            onFinished: icon.icon.rotation = 0
         }
     }
     CustomSpinBox {

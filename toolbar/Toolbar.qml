@@ -7,6 +7,7 @@ import Quickshell
 import qs.components
 import qs.annotation
 import "../"
+import "./icon"
 
 Rectangle {
     id: root
@@ -387,46 +388,5 @@ Rectangle {
         Layout.topMargin: 2
         Layout.bottomMargin: Layout.topMargin
         color: Config.gray
-    }
-    component IconBackground: StyledRectangle {
-        property alias mouseArea: mouseArea
-        property int innerPadding: 4
-
-        radius: 4
-        Behavior on color {
-            ColorAnimation {
-                duration: 275
-            }
-        }
-        StyledMouseArea {
-            id: mouseArea
-            anchors.fill: parent
-        }
-    }
-
-    component Icon: IconBackground {
-        id: iconComp
-        property alias source: snippyIcon.source
-        property alias size: snippyIcon.size
-        property alias iconColor: snippyIcon.color
-
-        property alias icon: snippyIcon
-
-        implicitWidth: snippyIcon.implicitWidth + innerPadding * 2
-        implicitHeight: snippyIcon.implicitHeight + innerPadding * 2
-
-        KirigamiIcon {
-            id: snippyIcon
-
-            anchors.centerIn: parent
-            size: Config.toolbarIconSize
-            color: Config.black
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: 275
-                }
-            }
-        }
     }
 }
