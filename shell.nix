@@ -10,6 +10,7 @@ in
       ++ [
         pkgs.qt6.wrapQtAppsHook
         pkgs.clang-tools
+        pkgs.tokei
         pkgs.makeWrapper
         pkgs.qtcreator
         pkgs.cmake

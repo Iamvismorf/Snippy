@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.synchronizer
 import Quickshell
 import qs.components
 import qs.annotation
@@ -367,6 +368,26 @@ Rectangle {
                 }
             }
         }
+    }
+    CustomSpinBox {
+        id: spinbox
+        from: -99
+        to: 99
+        wrap: true
+        radius: 10
+
+        Synchronizer on value {
+            sourceObject: Globals
+            sourceProperty: "step"
+
+            targetObject: spinbox
+            targetProperty: "value"
+        }
+
+        padding: 4
+
+        anchors.top: parent.bottom
+        anchors.topMargin: 16
     }
 
     HoverHandler {

@@ -31,7 +31,7 @@ PanelWindow {
     color: "transparent"
 
     WlrLayershell.layer: WlrLayer.Overlay
-    // WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
 
     SingleTapHandler {

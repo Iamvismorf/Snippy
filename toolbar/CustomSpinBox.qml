@@ -1,3 +1,4 @@
+//todo: fix when empty 0 is displayed. Prob need to override texttovalue and value to text
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic as Basic
@@ -6,8 +7,11 @@ import qs.components
 import qs.lib
 import qs.singletons
 
+// don't forget to use Synchronizer outside for bidirectional binding
 Basic.SpinBox {
     id: spinbox
+
+    property real radius: 8
 
     from: 0
     to: 0
@@ -51,6 +55,7 @@ Basic.SpinBox {
         readOnly: !spinbox.editable
         validator: spinbox.validator
 
+        // this doesn't do shit
         // function onTextEdited() {
         //     let val = parseInt(spinbox.contentItem.text);
         //     if (val > spinbox.to || val < spinbox.from) {
@@ -63,7 +68,7 @@ Basic.SpinBox {
     background: StyledRectangle {
         implicitWidth: fm.charWidth * Math.max(spinbox.from.toString().length, spinbox.to.toString().length) + 20 + spinbox.down.implicitIndicatorWidth + spinbox.up.implicitIndicatorWidth
         color: Config.lightGray
-        radius: 8
+        radius: spinbox.radius
     }
 
     up.indicator: StyledRectangle {
