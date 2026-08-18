@@ -1,4 +1,3 @@
-//todo: fix when empty 0 is displayed. Prob need to override texttovalue and value to text
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic as Basic
@@ -40,9 +39,20 @@ Basic.SpinBox {
             color: _disabled ? Config.gray : Config.black
         }
     }
+    //block invalid e.g if `to` is 64 and textinput is 6| pressing [5-9] won't do anything
+    Connections {
+        target: spinbox.contentItem
+        function onTextEdited() {
+            let val = parseInt(spinbox.contentItem.text);
+            if (val > spinbox.to || val < spinbox.from) {
+                spinbox.contentItem.text = Qt.binding(function () {
+                    return spinbox.value;
+                });
+            }
+        }
+    }
 
     contentItem: TextInput {
-        // text: spinbox.textFromValue(spinbox.value, spinbox.locale)
         text: spinbox.displayText
 
         color: Config.accent
@@ -54,16 +64,6 @@ Basic.SpinBox {
 
         readOnly: !spinbox.editable
         validator: spinbox.validator
-
-        // this doesn't do shit
-        // function onTextEdited() {
-        //     let val = parseInt(spinbox.contentItem.text);
-        //     if (val > spinbox.to || val < spinbox.from) {
-        //         spinbox.contentItem.text = Qt.binding(function () {
-        //             return spinbox.value;
-        //         });
-        //     }
-        // }
     }
     background: StyledRectangle {
         implicitWidth: fm.charWidth * Math.max(spinbox.from.toString().length, spinbox.to.toString().length) + 20 + spinbox.down.implicitIndicatorWidth + spinbox.up.implicitIndicatorWidth
