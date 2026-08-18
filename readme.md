@@ -46,7 +46,6 @@ todo
 
 ## Acknowledgements
 + [soramane](https://github.com/soramanew) special thanks to sora for showing how to do stuff
-+ [SquirrelModeller](https://github.com/SquirrelModeller) for showing how to create a nix package
 + [KDE/spectacle](https://github.com/KDE/spectacle) ui and backend inspirations
 + [Furkanzmc/QML-Coding-Guide](https://github.com/Furkanzmc/QML-Coding-Guide) 
 + [Quickshell](https://github.com/quickshell-mirror/quickshell)
