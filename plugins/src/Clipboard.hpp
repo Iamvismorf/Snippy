@@ -6,6 +6,7 @@
 #include <QQuickItemGrabResult>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+namespace Snippy {
 class Clipboard : public QObject {
   Q_OBJECT
   QML_ELEMENT
@@ -25,3 +26,4 @@ private:
 private slots:
   void copyImage();
 };
+} // namespace Snippy

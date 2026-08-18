@@ -2,10 +2,10 @@
 #include <QDBusArgument>
 #include <QDBusInterface>
 
-Notifier::Notifier(QObject *parent) : QObject(parent) {};
+Snippy::Notifier::Notifier(QObject *parent) : QObject(parent) {};
 
-void Notifier::notify(const QString &summary,
-                      const QQuickItemGrabResult *grabedImage) {
+void Snippy::Notifier::notify(const QString &summary,
+                              const QQuickItemGrabResult *grabedImage) {
   QDBusInterface notifInterface("org.freedesktop.Notifications",
                                 "/org/freedesktop/Notifications",
                                 "org.freedesktop.Notifications");
@@ -39,7 +39,8 @@ void Notifier::notify(const QString &summary,
   }
 }
 
-void Notifier::notify(bool status, const QString &summary, const QUrl &url) {
+void Snippy::Notifier::notify(bool status, const QString &summary,
+                              const QUrl &url) {
   QDBusInterface notifInterface("org.freedesktop.Notifications",
                                 "/org/freedesktop/Notifications",
                                 "org.freedesktop.Notifications");
