@@ -53,10 +53,10 @@ todo
 ## Todos
 - [x] Thickness spinbox
 - [ ] Steps editable spinbox
-- [ ] ~Follow user's qt system theme~~
+- [ ] ~~Follow user's qt system theme~~
 - [ ] Keyboard shortcuts
 - [ ] Select whole monitor
-- [ ] Draggable toolbar?
+- [x] Draggable toolbar
 ##### after 1.0
 - [ ] Color picker
 - [ ] Marker shapes

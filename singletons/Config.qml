@@ -8,7 +8,7 @@ Singleton {
     readonly property color black: "#121A21"
     readonly property color accent: "#ED5A70"
     readonly property color gray: "#C0C2C4"
-    readonly property color lightGray: "#D6D9DB" // todo: prob need to go darker
+    readonly property color lightGray: "#D6D9DB"
 
     readonly property color dimColor: "black"
 

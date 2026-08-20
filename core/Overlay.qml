@@ -31,7 +31,7 @@ PanelWindow {
     color: "transparent"
 
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    // WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
 
     SingleTapHandler {
@@ -296,8 +296,8 @@ PanelWindow {
         Item {
             anchors.fill: parent
             layer.enabled: true
-            // opacity: 0.1
-            opacity: 0.6
+            opacity: 0.1
+            // opacity: 0.6
 
             Dim {
                 //top
@@ -334,6 +334,10 @@ PanelWindow {
         }
         Toolbar {
             id: toolbar
+
+            readonly property int _margin: 16
+            property bool _anchoredBelow: true
+
             selectionRectangle: selectionRectangle
             // PersistentProperties {
             //     id: persist
@@ -347,23 +351,63 @@ PanelWindow {
             // opacity: 1
             //---end debug
 
-            // readonly property int _margin: 16
+            // Connections {
+            //     target: selectionRectangle
+            //     function onResizingChanged() {
+            //         if (!selectionRectangle.resizing) {
+            //             xBinding.when = true;
+            //         }
+            //     }
+            // }
+            // Connections {
+            //     target: selectionRectangleDragHandler
+            //     function onActiveChanged() {
+            //         if (!selectionRectangleDragHandler.active) {
+            //             xBinding.when = true;
+            //         }
+            //     }
+            // }
             // x: {
             //     let pos = selectionRectangle.x + (selectionRectangle.width - width) / 2;
             //     return pos + width > root.modelData.width - _margin / 2 ? root.modelData.width - width - _margin / 2 : pos < root.modelData.x + _margin / 2 ? root.modelData.x + _margin / 2 : pos;
             // }
             // y: {
-            //     if (opacity != 0) {
-            //         return y;
+            //     let above = selectionRectangle.y + selectionRectangle.height - height - _margin;
+            //     let below = selectionRectangle.y + selectionRectangle.height + _margin;
+            //
+            //     if (!selectionRectangle.active) {
+            //         _anchoredBelow = below + height <= root.modelData.height;
             //     }
-            //     let posWithoutMargin = selectionRectangle.y + selectionRectangle.height;
-            //     return posWithoutMargin + height + _margin > root.modelData.height ? posWithoutMargin - height - _margin : posWithoutMargin + _margin;
+            //
+            //     return _anchoredBelow ? below : above;
             // }
 
+            Binding {
+                id: bindings
+                restoreMode: Binding.RestoreBinding
+                when: (!selectionRectangle.resizing && !selectionRectangleDragHandler.active)
+                toolbar {
+                    x: {
+                        let pos = selectionRectangle.x + (selectionRectangle.width - toolbar.width) / 2;
+                        return pos + toolbar.width > root.modelData.width - toolbar._margin / 2 ? root.modelData.width - toolbar.width - toolbar._margin / 2 : pos < root.modelData.x + toolbar._margin / 2 ? root.modelData.x + toolbar._margin / 2 : pos;
+                    }
+                    y: {
+                        let above = selectionRectangle.y + selectionRectangle.height - toolbar.height - toolbar._margin;
+                        let below = selectionRectangle.y + selectionRectangle.height + toolbar._margin;
+
+                        if (!selectionRectangle.active) {
+                            toolbar._anchoredBelow = below + toolbar.height <= root.modelData.height;
+                        }
+
+                        return toolbar._anchoredBelow ? below : above;
+                    }
+                }
+            }
+
             //---start debug
-            anchors.top: selectionRectangle.bottom
-            anchors.horizontalCenter: selectionRectangle.horizontalCenter
-            anchors.topMargin: 24
+            // anchors.top: selectionRectangle.bottom
+            // anchors.horizontalCenter: selectionRectangle.horizontalCenter
+            // anchors.topMargin: 24
 
             //---end
             // x: 233.67578125
@@ -419,15 +463,6 @@ PanelWindow {
         //         tries += 1;
         //     }
         // }
-    }
-
-    component Seperator: Rectangle {
-        width: 1
-        Layout.fillHeight: true
-        Layout.alignment: Qt.AlignVCenter
-        Layout.topMargin: 2
-        Layout.bottomMargin: Layout.topMargin
-        color: Qt.lighter(Config.black, 4.5)
     }
 
     function prepareOutImage() {

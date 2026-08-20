@@ -72,7 +72,7 @@ Singleton {
         step = 1;
     }
 
-    onStepChanged: console.log(step)
+    onStepChanged: console.log("globals", step)
     // onCstepChanged: console.log(cstep)
     // onSelectedToolChanged: console.log(Qt.enumValueToStrings(Enums.Tools, selectedTool))
 

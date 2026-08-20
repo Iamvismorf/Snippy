@@ -1,4 +1,3 @@
-//todo: when resizing is in one direction draging in unavailable direction moves the rectangle instead of lock
 import QtQuick
 import qs.components
 import qs.singletons

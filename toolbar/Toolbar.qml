@@ -32,11 +32,31 @@ Rectangle {
 
         spacing: 16
 
-        StyledText {
-            id: dimensionText
+        // the placement of this is pretty much hardcoded. The Icon is manually left aligned but whatever, it looks good
+        RowGroup {
+            spacing: 0
+            Icon {
+                source: Quickshell.iconPath(Quickshell.shellPath("assets/dragIndicator"))
+                color: "transparent"
 
-            color: Config.black
-            text: Math.round(root.selectionRectangle.width) + " × " + Math.round(root.selectionRectangle.height)
+                mouseArea.enabled: false
+                icon.color: hoverhandler.hovered ? Config.accent : icon._defaultColor
+                DragHandler {
+                    id: dragHandler
+                    target: root
+                    cursorShape: Qt.DragMoveCursor
+                }
+                HoverHandler {
+                    id: hoverhandler
+                    cursorShape: Qt.OpenHandCursor
+                }
+            }
+            StyledText {
+                id: dimensionText
+
+                color: Config.black
+                text: Math.round(root.selectionRectangle.width) + " × " + Math.round(root.selectionRectangle.height)
+            }
         }
         Seperator {}
 
@@ -126,7 +146,7 @@ Rectangle {
                                     if (Globals.selectedTool == type) {
                                         return Config.white;
                                     }
-                                    return Config.black;
+                                    return icon._defaultColor;
                                 }
 
                                 opacity: parent._current == this
@@ -150,7 +170,7 @@ Rectangle {
                                     if (Globals.selectedTool == type) {
                                         return Config.white;
                                     }
-                                    return Config.black;
+                                    return icon._defaultColor;
                                 }
 
                                 opacity: parent._current == this
@@ -208,7 +228,7 @@ Rectangle {
                                 if (Globals.selectedTool == modelData.type) {
                                     return Config.white;
                                 }
-                                return Config.black;
+                                return icon._defaultColor;
                             }
 
                             mouseArea.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
@@ -218,6 +238,9 @@ Rectangle {
                                         Globals.selectedTool = Enums.Tools.None;
                                     } else {
                                         Globals.selectedTool = modelData.type;
+                                        // if (modelData.type == Enums.Tools.Steps) {
+                                        //     console.log(parent.x, parent.y);
+                                        // }
                                     }
                                 }
                             }
@@ -294,7 +317,7 @@ Rectangle {
                             source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
                             innerPadding: 2
 
-                            icon.color: _available ? Config.black : Config.gray
+                            icon.color: _available ? icon._defaultColor : Config.gray
                             mouseArea.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
                             mouseArea.onClicked: {
                                 if (_available) {
@@ -363,32 +386,57 @@ Rectangle {
                         return Qt.rgba(1, 1, 1, 0);
                     }
 
-                    icon.color: _isCloseIcon ? Config.red : Config.black
+                    icon.color: _isCloseIcon ? Config.red : icon._defaultColor
                     mouseArea.onClicked: root.action(modelData.action)
                 }
             }
         }
     }
-    CustomSpinBox {
-        id: spinbox
-        from: -99
-        to: 99
-        wrap: true
-        radius: 10
-
-        Synchronizer on value {
-            sourceObject: Globals
-            sourceProperty: "step"
-
-            targetObject: spinbox
-            targetProperty: "value"
-        }
-
-        padding: 4
-
-        anchors.top: parent.bottom
-        anchors.topMargin: 16
-    }
+    // CustomSpinBox {
+    //     id: spinbox
+    //
+    //     from: -99
+    //     to: 99
+    //     wrap: true
+    //     radius: 10
+    //
+    //     Connections {
+    //         target: Globals
+    //         function onStepChanged() {
+    //             if (Globals.step > spinbox.to) {
+    //                 spinbox.value = spinbox.from;
+    //             } else if (Globals.step < spinbox.from) {
+    //                 spinbox.value = spinbox.to;
+    //             }
+    //         }
+    //     }
+    //
+    //     Synchronizer on value {
+    //         sourceObject: Globals
+    //         sourceProperty: "step"
+    //
+    //         targetObject: spinbox
+    //         targetProperty: "value"
+    //     }
+    //
+    //     textFromValue: function (value, locale) {
+    //         if (value == 0 && spinbox.contentItem.activeFocus) {
+    //             return "";
+    //         }
+    //         return Number(value).toLocaleString(locale, 'f', 0);
+    //     }
+    //
+    //     valueFromText: function (text, locale) {
+    //         if (text.trim() === "")
+    //             return 0;
+    //         return parseInt(text, 10);
+    //     }
+    //
+    //     padding: 4
+    //
+    //     anchors.top: parent.bottom
+    //     anchors.topMargin: 16
+    // }
 
     HoverHandler {
         cursorShape: Qt.ArrowCursor

@@ -15,10 +15,11 @@ IconBackground {
 
     KirigamiIcon {
         id: kirigamiIcon
+        readonly property color _defaultColor: Config.black
 
         anchors.centerIn: parent
         size: Config.toolbarIconSize
-        color: Config.black
+        color: _defaultColor
 
         Behavior on color {
             ColorAnimation {

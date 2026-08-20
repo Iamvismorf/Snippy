@@ -17,6 +17,7 @@ pkgs.mkShell {
     ];
 
   QT_LOGGING_RULES = "quickshell.dbus.properties=false;kf.kirigami.platform=false;qt.qml.binding.removal.info=true";
+  # QT_LOGGING_RULES = "quickshell.dbus.properties=false;kf.kirigami.platform=false";
 
   # Qt 6 specific environment variables
   shellHook = ''
