@@ -9,6 +9,8 @@ import qs.singletons
 
 Item {
     id: root
+    readonly property bool canUndo: Globals.cstep > -1
+    readonly property bool canRedo: Globals.cstep != Globals.history.length - 1
     property int tempId: 0
     property var temp: ({})
     // onTempChanged: console.log(JSON.stringify(temp, null, " "))
@@ -50,8 +52,9 @@ Item {
         Globals.historyChanged();
     }
 
-    //no need for safe guard because we safe guard by disabling the button
     function undo() {
+        // qmlformat off
+        if (!canUndo) return;
         if (Globals.history[Globals.cstep]?.id == Globals.selectedChildId) {
             Globals.selectedChildId = -1;
         }
@@ -59,6 +62,7 @@ Item {
         Globals.cstep--;
     }
     function redo() {
+        if (!canRedo) return;
         Globals.cstep++;
     }
     function clearAll() {

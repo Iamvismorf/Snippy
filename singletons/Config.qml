@@ -4,26 +4,32 @@ import Quickshell
 import QtQuick
 
 Singleton {
+    //theming in config
     readonly property color white: "#EEF2F6"
     readonly property color black: "#121A21"
     readonly property color accent: "#ED5A70"
     readonly property color gray: "#C0C2C4"
     readonly property color lightGray: "#D6D9DB"
+    readonly property color red: "#ED5A70"
 
     readonly property color dimColor: "black"
 
+    //general in config
+    readonly property string fontFamily: "Atkinson Hyperlegible Next"
+    readonly property string fontFamilyStyle: "SemiBold"
+    readonly property bool showToolTip: false
     readonly property int minSelectionWidth: 20
     readonly property int minSelectionHeight: 20
-
     // will create ~/Screenshots/
     readonly property string saveFolder: "Screenshots"
+
     readonly property int _popupPadding: 6
     readonly property int horizontalPading: _popupPadding * 6 // right + left
     readonly property int verticalPadding: _popupPadding * 2 // top + bottom
 
-    readonly property color red: "#ED5A70"
-
     readonly property int toolbarIconSize: 20
+
+    //toolbar in config
     readonly property color toolbarPalette1: "#F44236"
     readonly property color toolbarPalette2: "#FF9700"
     readonly property color toolbarPalette3: "#FEC107"
@@ -33,10 +39,7 @@ Singleton {
     readonly property color toolbarPalette7: "#F5F5F5"
     readonly property color toolbarPalette8: "#000000"
 
-    readonly property string fontFamily: "Atkinson Hyperlegible Next"
-    readonly property string fontFamilyStyle: "SemiBold"
-
-    //todo make this float?
+    //todo: make this float?
     readonly property int normalThickness: 4
     readonly property int mediumThickness: 6
     readonly property int largeThickness: 8

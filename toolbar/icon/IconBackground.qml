@@ -22,7 +22,7 @@ StyledRectangle {
     ToolTip {
         id: toolTip
         delay: 550
-        visible: mouseArea.containsMouse && text != ""
+        visible: mouseArea.containsMouse && text != "" && Config.showToolTip
         enter: Transition {
             InOutAnim {
                 property: "opacity"

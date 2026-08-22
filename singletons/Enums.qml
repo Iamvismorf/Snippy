@@ -5,11 +5,11 @@ import QtQuick
 
 Singleton {
     enum Actions {
-        Undo,
-        Redo,
-        Clear,
-        Copy,
-        Save,
+        Undo,//ctrl z
+        Redo,//ctrl y
+        Clear,//ctrl q?
+        Copy,//ctrl c
+        Save,//ctrl s
         Abort
     }
     enum Tools {
@@ -23,7 +23,8 @@ Singleton {
         Arrow,
         Ellipse,
         FilledEllipse,
-        Highlight,
+        HighlightRectangle,
+        HighlightDraw,
         Steps,
         Pixelate,
         Text
@@ -33,4 +34,13 @@ Singleton {
         Creating,
         Created
     }
+
+    QtObject {
+        id: internal
+        property var toolsToString: ["None", "Selector", "Freehand", "Eraser", "Rectangle", "Filled Rectangle", "Line", "Arrow", "Ellipse", "Filled Ellipse", "Highlight Rectangle", "Highlight Freehand", "Number", "Pixelate", "Text"]
+    }
+
+    // qmlformat off
+    function actionsToString(val)    { return Qt.enumValueToString(Enums.Actions, val)}
+    function toolsToString(val)  { return internal.toolsToString[val]  ?? "Unknown" }
 }

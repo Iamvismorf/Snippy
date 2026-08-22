@@ -11,6 +11,7 @@ Basic.SpinBox {
     id: spinbox
 
     property real radius: 8
+    property color color: Config.lightGray
 
     from: 0
     to: 0
@@ -67,7 +68,7 @@ Basic.SpinBox {
     }
     background: StyledRectangle {
         implicitWidth: fm.charWidth * Math.max(spinbox.from.toString().length, spinbox.to.toString().length) + 20 + spinbox.down.implicitIndicatorWidth + spinbox.up.implicitIndicatorWidth
-        color: Config.lightGray
+        color: spinbox.color
         radius: spinbox.radius
     }
 

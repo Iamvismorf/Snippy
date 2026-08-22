@@ -91,6 +91,7 @@ RowGroup {
             reloadAnim.running = true;
             root._selectedThickness._copiedModelData = root._selectedThickness.modelData;
         }
+        toolTip.text: "Reset Thickness"
         NumberAnimation {
             id: reloadAnim
 

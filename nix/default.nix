@@ -60,6 +60,7 @@ in
 
       makeWrapper ${quickshell}/bin/qs $out/bin/snippy \
          --set FONTCONFIG_FILE "${defaultFont}" \
+         --add-flags "-n" \
          --add-flags "-p $out/share/snippy"
     '';
 

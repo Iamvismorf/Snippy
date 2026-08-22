@@ -32,7 +32,7 @@ Rectangle {
 
         spacing: 16
 
-        // the placement of this is pretty much hardcoded. The Icon is manually left aligned but whatever, it looks good
+        // the placement of this is pretty much hardcoded. The Icon is manually left aligned with inkscape but whatever, it looks good
         RowGroup {
             spacing: 0
             Icon {
@@ -95,7 +95,7 @@ Rectangle {
                     },
                     {
                         icon: "highlighter",
-                        type: Enums.Tools.Highlight
+                        types: [Enums.Tools.HighlightRectangle, Enums.Tools.HighlightDraw]
                     },
                     {
                         icon: "steps",
@@ -120,6 +120,7 @@ Rectangle {
                             required property var modelData
                             property Item _current: filled
 
+                            toolTip.text: Enums.toolsToString(_current.type)
                             implicitWidth: _current.implicitWidth
                             implicitHeight: _current.implicitHeight
                             innerPadding: 0
@@ -201,6 +202,68 @@ Rectangle {
                         }
                     }
                     DelegateChoice {
+                        roleValue: "highlighter"
+                        delegate: Icon {
+                            id: highlighter
+                            required property var modelData
+                            property int _current: modelData.types[0]
+                            property bool _selected: Globals.selectedTool == _current
+
+                            source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
+                            toolTip.text: Enums.toolsToString(_current)
+
+                            color: {
+                                if (Globals.selectedTool == _current) {
+                                    return Config.accent;
+                                }
+                                if (mouseArea.containsMouse) {
+                                    return Config.lightGray;
+                                }
+                                return Qt.rgba(1, 1, 1, 0);
+                            }
+                            icon.color: {
+                                if (Globals.selectedTool == _current) {
+                                    return Config.white;
+                                }
+                                return icon._defaultColor;
+                            }
+
+                            mouseArea {
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                onClicked: m => {
+                                    if (m.button == Qt.LeftButton) {
+                                        if (highlighter._selected) {
+                                            Globals.selectedTool = Enums.Tools.None;
+                                        } else {
+                                            Globals.selectedTool = Qt.binding(function () {
+                                                return highlighter._current;
+                                            });
+                                        }
+                                    } else {
+                                        highlighter._current = highlighter._current == modelData.types[0] ? modelData.types[1] : modelData.types[0];
+                                    }
+                                }
+                            }
+
+                            StyledRectangle {
+                                anchors.horizontalCenter: parent.left
+                                // anchors.bottom: parent.bottom
+                                implicitWidth: highlighter._current == modelData.types[0] ? 12 : height
+                                height: highlighter._current == modelData.types[0] ? 8 : 10
+
+                                animatedColor: true
+                                animatedSize: true
+                                radius: highlighter._current == modelData.types[0] ? 0 : height
+                                color: highlighter._selected ? Config.white : highlighter.icon._defaultColor
+
+                                border {
+                                    width: highlighter._selected ? 1 : 0
+                                    color: Config.accent
+                                }
+                            }
+                        }
+                    }
+                    DelegateChoice {
                         delegate: Icon {
                             required property var modelData
                             readonly property bool _available: {
@@ -211,6 +274,7 @@ Rectangle {
                             }
 
                             source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
+                            toolTip.text: Enums.toolsToString(modelData.type)
 
                             color: {
                                 if (Globals.selectedTool == modelData.type) {
@@ -234,13 +298,11 @@ Rectangle {
                             mouseArea.cursorShape: _available ? Qt.PointingHandCursor : Qt.ForbiddenCursor
                             mouseArea.onClicked: {
                                 if (_available) {
-                                    if (Globals.selectedTool == modelData.type) {
+                                    if (Globals.selectedTool == modelData.type) { // deselect tool
                                         Globals.selectedTool = Enums.Tools.None;
-                                    } else {
+                                    } else { // select tool
                                         Globals.selectedTool = modelData.type;
-                                        // if (modelData.type == Enums.Tools.Steps) {
-                                        //     console.log(parent.x, parent.y);
-                                        // }
+                                        // console.log(root.mapFromItem(parent, x, y));//send
                                     }
                                 }
                             }
@@ -262,11 +324,13 @@ Rectangle {
                 model: [
                     {
                         icon: "undo",
-                        action: Enums.Actions.Undo
+                        action: Enums.Actions.Undo,
+                        shortcut: "Ctrl+z"
                     },
                     {
                         icon: "redo",
-                        action: Enums.Actions.Redo
+                        action: Enums.Actions.Redo,
+                        shortcut: "Ctrl+y"
                     },
                     {
                         icon: "clear",
@@ -302,6 +366,7 @@ Rectangle {
                                     return Qt.rgba(1, 1, 1, 0);
                                 }
                             }
+                            toolTip.text: `${Enums.actionsToString(modelData.action)}`
                         }
                     }
 
@@ -327,6 +392,7 @@ Rectangle {
 
                             radius: 100
                             color: mouseArea.containsMouse ? Config.lightGray : Qt.rgba(1, 1, 1, 0)
+                            toolTip.text: `${Enums.actionsToString(modelData.action)} <span style=\"color:${Config.accent};\">${modelData.shortcut}</span>`
                         }
                     }
                 }
@@ -358,15 +424,18 @@ Rectangle {
                 model: [
                     {
                         icon: "copy",
-                        action: Enums.Actions.Copy
+                        action: Enums.Actions.Copy,
+                        shortcut: "Ctrl+c"
                     },
                     {
                         icon: "save",
-                        action: Enums.Actions.Save
+                        action: Enums.Actions.Save,
+                        shortcut: "Ctrl+s"
                     },
                     {
                         icon: "close",
-                        action: Enums.Actions.Abort
+                        action: Enums.Actions.Abort,
+                        shortcut: "Esc"
                     }
                 ]
                 delegate: Icon {
@@ -388,6 +457,7 @@ Rectangle {
 
                     icon.color: _isCloseIcon ? Config.red : icon._defaultColor
                     mouseArea.onClicked: root.action(modelData.action)
+                    toolTip.text: `${Enums.actionsToString(modelData.action)} <span style=\"color:${Config.accent};\">${modelData.shortcut}</span>`
                 }
             }
         }
@@ -398,7 +468,9 @@ Rectangle {
     //     from: -99
     //     to: 99
     //     wrap: true
-    //     radius: 10
+    //     radius: 12
+    //     padding: 6
+    //     color: Config.white
     //
     //     Connections {
     //         target: Globals
@@ -431,8 +503,6 @@ Rectangle {
     //             return 0;
     //         return parseInt(text, 10);
     //     }
-    //
-    //     padding: 4
     //
     //     anchors.top: parent.bottom
     //     anchors.topMargin: 16

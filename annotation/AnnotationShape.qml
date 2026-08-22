@@ -102,8 +102,11 @@ Item {
             case Enums.Tools.FilledEllipse:
                 return filledEllipse;
 
-            case Enums.Tools.Highlight:
-                return highlight;
+            case Enums.Tools.HighlightRectangle:
+                return highlightRectangle;
+
+            case Enums.Tools.HighlightDraw:
+                return highlightDraw;
 
             case Enums.Tools.Pixelate:
                 return pixelate;
@@ -277,17 +280,37 @@ Item {
     }
 
     Component {
-        id: highlight
+        id: highlightRectangle
         Rectangle {
             readonly property rect boundingRect: Qt.rect(x, y, width, height)
 
-            opacity: 0.4
             x: Math.min(root.annotation.endX, root.annotation.startX)
             y: Math.min(root.annotation.endY, root.annotation.startY)
             width: Math.abs(root.annotation.endX - root.annotation.startX)
             height: Math.abs(root.annotation.endY - root.annotation.startY)
 
             color: root.annotation.color
+            opacity: 0.3
+        }
+    }
+
+    Component {
+        id: highlightDraw
+        Shape {
+            preferredRendererType: Shape.CurveRenderer
+            layer.enabled: true
+            opacity: 0.3
+            ShapePath {
+                strokeWidth: root.annotation.thickness * 3
+                strokeColor: root.annotation.color
+                fillColor: "transparent"
+                capStyle: ShapePath.RoundCap
+                joinStyle: ShapePath.RoundJoin
+
+                PathPolyline {
+                    path: root.annotation.points
+                }
+            }
         }
     }
 
