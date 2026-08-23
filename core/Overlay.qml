@@ -31,7 +31,7 @@ PanelWindow {
     color: "transparent"
 
     WlrLayershell.layer: WlrLayer.Overlay
-    // WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
 
     SingleTapHandler {
@@ -49,7 +49,7 @@ PanelWindow {
         onActiveChanged: {
             if (active) {
                 if (!selectionRectangle.locked) {
-                    selectionRectangle.destruct();
+                    selectionRectangle.destruct(); // fixes weird toolbar anim
                     selectionRectangle.state = "creating";
                 } else {
                     canvas.temp = {
@@ -97,7 +97,7 @@ PanelWindow {
         property point _lastPosition
         property point _cumulativeDelta: Qt.point(0, 0)
 
-        enabled: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Draw || Globals.selectedTool == Enums.Tools.Steps || Globals.selectedTool == Enums.Tools.Text
+        enabled: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Draw || Globals.selectedTool == Enums.Tools.HighlightDraw || Globals.selectedTool == Enums.Tools.Steps || Globals.selectedTool == Enums.Tools.Text
         gesturePolicy: TapHandler.WithinBounds
 
         onPressedChanged: {
@@ -136,10 +136,10 @@ PanelWindow {
                         thickness: Globals.selectedThickness,
                         color: Qt.rgba(Globals.selectedColor.r, Globals.selectedColor.g, Globals.selectedColor.b) // bruh
                     };
-                } else if (Globals.selectedTool == Enums.Tools.Draw) {
+                } else if (Globals.selectedTool == Enums.Tools.Draw || Globals.selectedTool == Enums.Tools.HighlightDraw) {
                     canvas.temp = {
                         id: canvas.tempId,
-                        type: Enums.Tools.Draw,
+                        type: Globals.selectedTool,
                         startX: point.pressPosition.x,
                         startY: point.pressPosition.y,
                         points: [],
@@ -168,7 +168,7 @@ PanelWindow {
         onPointChanged: {
             selectionRectangle.active = active && point.velocity.length() > 0;
             if (active) {
-                if (Globals.selectedTool == Enums.Tools.Draw) {
+                if (Globals.selectedTool == Enums.Tools.Draw || Globals.selectedTool == Enums.Tools.HighlightDraw) {
                     canvas.temp.points.push(point.position);
                     canvas.tempChanged();
                 } else if (Globals.selectedTool == Enums.Tools.Steps) {
@@ -226,9 +226,23 @@ PanelWindow {
         Keys.onEscapePressed: {
             Qt.quit();
         }
-        Keys.onReturnPressed: {
-            root.save();
+        // qmlformat off
+        Keys.onPressed: e => {
+            if (selectionRectangle.state != "created") return;
+            if (e.modifiers & Qt.ControlModifier) {
+                if (e.key == Qt.Key_C) { root.copy(); }
+                else if (e.key == Qt.Key_S) { root.save(); }
+                else if (e.key == Qt.Key_Z) {
+                   canvas.undo();
+                   e.accepted = true;
+                }
+                else if (e.key == Qt.Key_Y) {
+                   canvas.redo();
+                   e.accepted = true;
+                }
+            }
         }
+        // qmlformat on
 
         ShortcutInhibitor {
             window: root
@@ -249,9 +263,9 @@ PanelWindow {
                 ScreencopyView {
                     id: screenCopy
 
-                    // paintCursor: true
-                    // captureSource: modelData
-                    // anchors.fill: parent
+                    paintCursor: true
+                    captureSource: modelData
+                    anchors.fill: parent
                 }
                 AnnotationCanvas {
                     id: canvas
@@ -265,13 +279,24 @@ PanelWindow {
         SelectionRectangle {
             id: selectionRectangle
 
+            //todo:fullscreen
+            // Component.onCompleted: {
+            //     implicitWidth = root.modelData.width;
+            //     implicitHeight = root.modelData.height;
+            //     state = "created";
+            // }
+
             SingleTapHandler {
                 enabled: !selectionRectangle.locked
                 cursorShape: Qt.DragMoveCursor
                 gesturePolicy: TapHandler.WithinBounds
+                grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
+                onActiveChanged: selectionRectangle.active = active
             }
             DragHandler {
                 id: selectionRectangleDragHandler
+                grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
+                onActiveChanged: selectionRectangle.active = active
                 enabled: !selectionRectangle.locked
 
                 cursorShape: Qt.DragMoveCursor
@@ -284,20 +309,21 @@ PanelWindow {
                     minimum: 0
                     maximum: root.height - selectionRectangle.height
                 }
-                onGrabChanged: t => {
-                    if (t == PointerDevice.GrabPassive) {
-                        selectionRectangle.active = true;
-                    } else if (t == PointerDevice.UngrabPassive) {
-                        selectionRectangle.active = false;
-                    }
-                }
+                //todo: bug when fullscreen or toolbar is inside the selectionrectangle
+                // onGrabChanged: t => {
+                //     if (t == PointerDevice.GrabPassive) {
+                //         selectionRectangle.active = true;
+                //     } else if (t == PointerDevice.UngrabPassive) {
+                //         selectionRectangle.active = false;
+                //     }
+                // }
             }
         }
         Item {
             anchors.fill: parent
             layer.enabled: true
-            opacity: 0.1
-            // opacity: 0.6
+            // opacity: 0.1
+            opacity: 0.6
 
             Dim {
                 //top
@@ -382,10 +408,11 @@ PanelWindow {
             //     return _anchoredBelow ? below : above;
             // }
 
+            // opacity: 1
             Binding {
                 id: bindings
                 restoreMode: Binding.RestoreBinding
-                when: (!selectionRectangle.resizing && !selectionRectangleDragHandler.active)
+                when: (!selectionRectangle.resizing && !selectionRectangleDragHandler.active && selectionRectangle.state == "created")
                 toolbar {
                     x: {
                         let pos = selectionRectangle.x + (selectionRectangle.width - toolbar.width) / 2;
@@ -432,12 +459,7 @@ PanelWindow {
                     canvas.clearAll();
                     break;
                 case Enums.Actions.Copy:
-                    prepareOutImage();
-                    Snippy.Clipboard.requestCopyImage(result);
-                    Snippy.Clipboard.copied.connect(function (grabedImage) {
-                        Snippy.Notifier.notify("Rectangular Region", grabedImage);
-                        Qt.quit();
-                    });
+                    root.copy();
                     break;
                 case Enums.Actions.Save:
                     root.save();
@@ -449,20 +471,20 @@ PanelWindow {
             }
         }
 
-        // Timer {
-        //     interval: 120
-        //     repeat: true
-        //     running: !screenCopy.hasContent
-        //     property int tries: 0
-        //     onTriggered: {
-        //         if (screenCopy.hasContent || tries > 10) {
-        //             running = false;
-        //             return;
-        //         }
-        //         screenCopy.captureFrame();
-        //         tries += 1;
-        //     }
-        // }
+        Timer {
+            interval: 120
+            repeat: true
+            running: !screenCopy.hasContent
+            property int tries: 0
+            onTriggered: {
+                if (screenCopy.hasContent || tries > 10) {
+                    running = false;
+                    return;
+                }
+                screenCopy.captureFrame();
+                tries += 1;
+            }
+        }
     }
 
     function prepareOutImage() {
@@ -484,7 +506,16 @@ PanelWindow {
         result.grabToImage(function (r) {
             let savePath = `${Lib.getSaveFolder()}/snippy-${Qt.formatDateTime(new Date(), "dd-MMM-yyyy_HH:mm:ss")}.png`;
             let status = r.saveToFile(savePath);
-            Snippy.Notifier.notify(true, "Rectangle Region", savePath);
+            Snippy.Notifier.notify(status, "Rectangle Region", savePath);
+            Qt.quit();
+        });
+    }
+
+    function copy() {
+        prepareOutImage();
+        Snippy.Clipboard.requestCopyImage(result);
+        Snippy.Clipboard.copied.connect(function (grabedImage) {
+            Snippy.Notifier.notify("Rectangular Region", grabedImage);
             Qt.quit();
         });
     }
