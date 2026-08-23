@@ -309,14 +309,6 @@ PanelWindow {
                     minimum: 0
                     maximum: root.height - selectionRectangle.height
                 }
-                //todo: bug when fullscreen or toolbar is inside the selectionrectangle
-                // onGrabChanged: t => {
-                //     if (t == PointerDevice.GrabPassive) {
-                //         selectionRectangle.active = true;
-                //     } else if (t == PointerDevice.UngrabPassive) {
-                //         selectionRectangle.active = false;
-                //     }
-                // }
             }
         }
         Item {
@@ -365,50 +357,7 @@ PanelWindow {
             property bool _anchoredBelow: true
 
             selectionRectangle: selectionRectangle
-            // PersistentProperties {
-            //     id: persist
-            //     reloadableId: "persistedStates"
-            //
-            //     property real x: selectionRectangle.width + selectionRectangle.x
-            //     property real y: selectionRectangle.height + selectionRectangle.y
-            // }
-            // x: persist.x
-            // y: persist.y
-            // opacity: 1
-            //---end debug
 
-            // Connections {
-            //     target: selectionRectangle
-            //     function onResizingChanged() {
-            //         if (!selectionRectangle.resizing) {
-            //             xBinding.when = true;
-            //         }
-            //     }
-            // }
-            // Connections {
-            //     target: selectionRectangleDragHandler
-            //     function onActiveChanged() {
-            //         if (!selectionRectangleDragHandler.active) {
-            //             xBinding.when = true;
-            //         }
-            //     }
-            // }
-            // x: {
-            //     let pos = selectionRectangle.x + (selectionRectangle.width - width) / 2;
-            //     return pos + width > root.modelData.width - _margin / 2 ? root.modelData.width - width - _margin / 2 : pos < root.modelData.x + _margin / 2 ? root.modelData.x + _margin / 2 : pos;
-            // }
-            // y: {
-            //     let above = selectionRectangle.y + selectionRectangle.height - height - _margin;
-            //     let below = selectionRectangle.y + selectionRectangle.height + _margin;
-            //
-            //     if (!selectionRectangle.active) {
-            //         _anchoredBelow = below + height <= root.modelData.height;
-            //     }
-            //
-            //     return _anchoredBelow ? below : above;
-            // }
-
-            // opacity: 1
             Binding {
                 id: bindings
                 restoreMode: Binding.RestoreBinding
@@ -422,11 +371,21 @@ PanelWindow {
                         let above = selectionRectangle.y + selectionRectangle.height - toolbar.height - toolbar._margin;
                         let below = selectionRectangle.y + selectionRectangle.height + toolbar._margin;
 
-                        if (!selectionRectangle.active) {
-                            toolbar._anchoredBelow = below + toolbar.height <= root.modelData.height;
-                        }
+                        // if (!selectionRectangle.active) {
+                        //     toolbar._anchoredBelow = below + toolbar.height <= root.modelData.height;
+                        // }
 
                         return toolbar._anchoredBelow ? below : above;
+                    }
+                }
+            }
+            //fixes binding loop
+            Connections {
+                target: selectionRectangle
+                function onActiveChanged() {
+                    if (!selectionRectangle.active) {
+                        let below = selectionRectangle.y + selectionRectangle.height + toolbar._margin;
+                        toolbar._anchoredBelow = below + toolbar.height <= root.modelData.height;
                     }
                 }
             }
