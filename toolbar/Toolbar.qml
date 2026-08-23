@@ -36,7 +36,7 @@ Rectangle {
         RowGroup {
             spacing: 0
             Icon {
-                source: Quickshell.iconPath(Quickshell.shellPath("assets/dragIndicator"))
+                source: Quickshell.iconPath(Quickshell.shellPath("assets/dragIndicator.svg"))
                 color: "transparent"
 
                 mouseArea.enabled: false
@@ -78,6 +78,7 @@ Rectangle {
                     {
                         icon: "filled",
                         icons: ["squareFilled", "square"],
+                        defaultTo: Config.rectangleDefaultToFilled,
                         types: [Enums.Tools.FilledRectangle, Enums.Tools.Rectangle]
                     },
                     {
@@ -91,6 +92,7 @@ Rectangle {
                     {
                         icon: "filled",
                         icons: ["circleFilled", "circle"],
+                        defaultTo: Config.ellipseDefaultToFilled,
                         types: [Enums.Tools.FilledEllipse, Enums.Tools.Ellipse]
                     },
                     {
@@ -118,8 +120,7 @@ Rectangle {
                             id: filledComp
 
                             required property var modelData
-                            property Item _current: filled
-
+                            property Item _current: modelData.defaultTo ? filled : notFilled
                             toolTip.text: Enums.toolsToString(_current.type)
                             implicitWidth: _current.implicitWidth
                             implicitHeight: _current.implicitHeight
@@ -141,7 +142,6 @@ Rectangle {
                                 readonly property int type: modelData.types[0]
                                 source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icons[0]}.svg`))
                                 color: "transparent"
-                                property string eyedih: "filled"
 
                                 icon.color: {
                                     if (Globals.selectedTool == type) {
@@ -165,7 +165,6 @@ Rectangle {
                                 readonly property int type: modelData.types[1]
                                 source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icons[1]}.svg`))
                                 color: "transparent"
-                                property string eyedih: "notfilled"
 
                                 icon.color: {
                                     if (Globals.selectedTool == type) {
@@ -206,7 +205,7 @@ Rectangle {
                         delegate: Icon {
                             id: highlighter
                             required property var modelData
-                            property int _current: modelData.types[0]
+                            property int _current: Config.highlightDefaultToRectangle ? modelData.types[0] : modelData.types[1]
                             property bool _selected: Globals.selectedTool == _current
 
                             source: Quickshell.iconPath(Quickshell.shellPath(`assets/${modelData.icon}.svg`))
@@ -248,12 +247,12 @@ Rectangle {
                             StyledRectangle {
                                 anchors.horizontalCenter: parent.left
                                 // anchors.bottom: parent.bottom
-                                implicitWidth: highlighter._current == modelData.types[0] ? 12 : height
-                                height: highlighter._current == modelData.types[0] ? 8 : 10
+                                implicitWidth: highlighter._current == highlighter.modelData.types[0] ? 12 : height
+                                height: highlighter._current == highlighter.modelData.types[0] ? 8 : 10
 
                                 animatedColor: true
                                 animatedSize: true
-                                radius: highlighter._current == modelData.types[0] ? 0 : height
+                                radius: highlighter._current == highlighter.modelData.types[0] ? 0 : height
                                 color: highlighter._selected ? Config.white : highlighter.icon._defaultColor
 
                                 border {

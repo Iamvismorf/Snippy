@@ -4,8 +4,14 @@ qml_module(snippy-qml-plugin
    DEPENDENCIES QtQuick
 
    SOURCES
+      Clipboard.hpp
       Clipboard.cpp
+
+      Notifier.hpp
       Notifier.cpp
+
+      Filesystem.hpp
+      Filesystem.cpp
 )
 
 

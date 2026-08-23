@@ -14,10 +14,6 @@ Singleton {
         return true;
     }
 
-    function getSaveFolder() {
-        return Quickshell.env("HOME") + "/" + Config.saveFolder;
-    }
-
     // https://stackoverflow.com/a/3943023/32940244
     // function used to choose which "opposite" color to use
     // caller should provide a light color if the function returns true

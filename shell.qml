@@ -5,15 +5,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.core
-
-import qs.lib
+import Snippy as Snippy
 
 ShellRoot {
-    Process {
-        running: true
-        command: ["sh", "-c", `mkdir -p ${Lib.getSaveFolder()}`]
-    }
-
     Variants {
         model: Quickshell.screens
         Overlay {}

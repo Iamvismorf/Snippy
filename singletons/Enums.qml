@@ -43,4 +43,5 @@ Singleton {
     // qmlformat off
     function actionsToString(val)    { return Qt.enumValueToString(Enums.Actions, val)}
     function toolsToString(val)  { return internal.toolsToString[val]  ?? "Unknown" }
+    // qmlformat on
 }
