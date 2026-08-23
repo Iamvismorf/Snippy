@@ -62,8 +62,7 @@ Item {
         x: root._selectedColor?.mapToItem(wrapper, 0, 0).x + (root._selectedColor?.width - implicitWidth) / 2
         y: root.y - implicitHeight
 
-        implicitWidth: 10
-        implicitHeight: implicitWidth
+        size: 10
         color: Config.accent
 
         Behavior on x {

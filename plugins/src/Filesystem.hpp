@@ -14,12 +14,12 @@ public:
 
   Q_INVOKABLE QString getConfigFile();
   Q_INVOKABLE void createSaveDir(const QString &dirpath);
+  Q_INVOKABLE QString getHomeDir();
 
 signals:
   void configFileCreated();
 
 private:
   QString getConfigDir();
-  QString getHomeDir();
 };
 } // namespace Snippy

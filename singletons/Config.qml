@@ -57,6 +57,7 @@ Singleton {
     readonly property bool showToolTip: config.general.showToolTip
     readonly property int minSelectionWidth: config.general.minSelectionRectangleWidth
     readonly property int minSelectionHeight: config.general.minSelectionRectangleHeight
+    readonly property string saveDir: Snippy.Filesystem.getHomeDir() + "/" + config.general.saveFolder
 
     //theming in config
     readonly property color white: config.theming.white
