@@ -1,10 +1,11 @@
 {
+  self,
   stdenv,
   lib,
   qt6,
   cmake,
   makeWrapper,
-  kdePackages,
+  kirigami,
   ninja,
   quickshell,
   makeFontsConf,
@@ -26,9 +27,11 @@
   defaultFont = makeFontsConf {
     fontDirectories = [atkinson-hyperlegible-next];
   };
+  version = self.shortRev or self.dirtyShortRev or "UNKNOWN";
 
   qml-plugin = stdenv.mkDerivation {
-    name = "snippy-qml-plugin";
+    pname = "snippy-qml-plugin";
+    inherit version;
     src = ../plugins;
 
     nativeBuildInputs = [
@@ -48,11 +51,12 @@
   };
 in
   stdenv.mkDerivation {
-    name = "snippy";
+    pname = "snippy";
+    inherit version;
     inherit src;
 
     nativeBuildInputs = [makeWrapper qt6.wrapQtAppsHook];
-    buildInputs = [qml-plugin kdePackages.kirigami qt6.qtbase];
+    buildInputs = [qml-plugin kirigami qt6.qtbase];
 
     installPhase = ''
       mkdir -p $out/share/snippy

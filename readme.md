@@ -37,7 +37,7 @@ nix run github:Iamvismorf/Snippy
 <br>
 
 > [!NOTE]
-> As of 22.08.26 the Kirigami package in unstable nixpkgs has a regression where icons appear smaller than they should be. `inputs.nixpkgs.follows` is not recommended.
+> As of 22.08.26 the Kirigami package in unstable nixpkgs has a regression where icons appear smaller than they should be. `inputs.nixpkgs.follows` is not recommended. If you want to use `follows`, override kirigami to version 6.26 
 ```nix
 {
   inputs.snippy.url = "github:Iamvismorf/Snippy";
