@@ -35,13 +35,13 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
 
     SingleTapHandler {
-        enabled: dragHandler.enabled
+        enabled: dragHandler.enabled && screenCopy.hasContent
         gesturePolicy: TapHandler.WithinBounds
         onActiveChanged: selectionRectangle.active = active
     }
     DragHandler {
         id: dragHandler
-        enabled: !tapHandler.enabled
+        enabled: !tapHandler.enabled && screenCopy.hasContent
         target: null
         // grabPermissions: PointerHandler.TakeOverForbidden
         grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
@@ -97,7 +97,7 @@ PanelWindow {
         property point _lastPosition
         property point _cumulativeDelta: Qt.point(0, 0)
 
-        enabled: Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Draw || Globals.selectedTool == Enums.Tools.HighlightDraw || Globals.selectedTool == Enums.Tools.Steps || Globals.selectedTool == Enums.Tools.Text
+        enabled: (Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select || Globals.selectedTool == Enums.Tools.Draw || Globals.selectedTool == Enums.Tools.HighlightDraw || Globals.selectedTool == Enums.Tools.Steps || Globals.selectedTool == Enums.Tools.Text) && screenCopy.hasContent
         gesturePolicy: TapHandler.WithinBounds
 
         onPressedChanged: {
@@ -207,6 +207,7 @@ PanelWindow {
 
     HoverHandler {
         id: hoverhandler
+        enabled: screenCopy.hasContent
         cursorShape: {
             if (Globals.selectedTool == Enums.Tools.Erase || Globals.selectedTool == Enums.Tools.Select) {
                 return Qt.ArrowCursor;
@@ -263,7 +264,6 @@ PanelWindow {
                 ScreencopyView {
                     id: screenCopy
 
-                    paintCursor: true
                     captureSource: modelData
                     anchors.fill: parent
                 }

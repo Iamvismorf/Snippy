@@ -84,13 +84,13 @@ todo
 14. Palette
 15. Reset the selected thickness to default if was modified
 16. Modify the selected thickness
-17. Undo. Available if current canvas step is not 0. See 20
-18. Redo. Available if current canvas step is not the last. See 20
+17. Undo(Ctrl+z). Available if current canvas step is not 0. See 20
+18. Redo(Ctrl+y). Available if current canvas step is not the last. See 20
 19. Clear the canvas. Available when there is at least 1 annotation on the canvas
 20. The canvas history. Highlighted shows the current step
-21. Copy to clipboard. Also see [notes](#notes)
-22. Save to configured path
-23. Exit
+21. Copy to clipboard(Ctrl+c). Also see [notes](#notes)
+22. Save to configured path(Ctrl+s)
+23. Exit(Esc)
 
 ### Configuration
 Launch snippy for the first time and it will generate ~/.config/config.json and ~/Screenshots. Or create one manually.
